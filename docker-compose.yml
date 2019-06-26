@@ -1,0 +1,16 @@
+version: '3'
+services:
+  sql-docker-container:
+    image: mysql/mysql-server:latest
+    container_name: capstone_mysql
+    environment:
+      - MYSQL_DATABASE=capstone
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_USER=user
+      - MYSQL_PASSWORD=password
+    ports:
+      - 6604:3306
+
+    volumes:
+      - /data/mysql
+    restart: always
