@@ -1,8 +1,11 @@
 package capstone.domain;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.UniqueElements;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.Date;
 
 @Data
@@ -14,8 +17,13 @@ public class User {
    @GeneratedValue(strategy = GenerationType.AUTO)
    private long id;
 
+   @Size(min = 2)
+   @UniqueElements
+   @NotNull
    private String username;
 
+   @NotNull
+   @Size(min=8, max=20, message = "Password must be b/t {min} and {max}")
    private String password;
 
    private String firstName;
@@ -32,6 +40,7 @@ public class User {
    }
 
    public User(String username, String password, String firstName, String lastName) {
+
       this.username = username;
       this.password = password;
       this.firstName = firstName;
