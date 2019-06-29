@@ -1,5 +1,6 @@
 package capstone.domain;
 
+import capstone.security.domain.Role;
 import lombok.Data;
 import org.hibernate.validator.constraints.UniqueElements;
 
@@ -26,9 +27,15 @@ public class User {
    @Size(min=8, max=20, message = "Password must be b/t {min} and {max}")
    private String password;
 
+   private Date dateJoined;
+
    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
    @JoinColumn(name = "person_id", referencedColumnName = "id")
    private Person person1 = null;
+
+   @OneToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
+   private List<Role> roles;
+
 
 
 
@@ -40,6 +47,11 @@ public class User {
 
       this.username = username;
       this.password = password;
+   }
+
+   @PrePersist
+   void joinDate(){
+      this.dateJoined = new Date();
    }
 
 

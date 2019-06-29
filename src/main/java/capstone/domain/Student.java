@@ -25,6 +25,8 @@ public class Student extends Person {
 
 
 
+
+
    public Student(String firstName, String lastName,  double gpa, String major) {
       super(firstName, lastName);
       this.gpa = gpa;

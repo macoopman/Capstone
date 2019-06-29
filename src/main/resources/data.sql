@@ -4,4 +4,11 @@
 
 
 
+INSERT INTO role (id, role_name, description) VALUES (1, "ROLE_ADMIN", "Admin role");
+INSERT INTO role (id, role_name, description) VALUES (2, "ROLE_USER", "User role");
+
+
+
+
+
 

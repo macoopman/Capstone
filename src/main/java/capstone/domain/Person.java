@@ -18,17 +18,14 @@ public class Person {
 
    private String lastName;
 
-   private Date dateJoined;
+
 
 
    @OneToOne(targetEntity = User.class)
    private User user;
 
 
-   @PrePersist
-   void joinDate(){
-      this.dateJoined = new Date();
-   }
+
 
    protected Person() {
    }

@@ -11,6 +11,6 @@ services:
     ports:
       - 6604:3306
 
-    volumes:
-      - /data/mysql
+#    volumes:
+#      - /data/mysql
     restart: always
