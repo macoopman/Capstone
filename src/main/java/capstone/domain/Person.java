@@ -21,7 +21,8 @@ public class Person {
    private Date dateJoined;
 
 
-
+   @OneToOne(targetEntity = User.class)
+   private User user;
 
 
    @PrePersist
@@ -29,7 +30,7 @@ public class Person {
       this.dateJoined = new Date();
    }
 
-   public Person() {
+   protected Person() {
    }
 
    public Person(String firstName, String lastName) {

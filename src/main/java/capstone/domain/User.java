@@ -28,7 +28,7 @@ public class User {
 
    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
    @JoinColumn(name = "person_id", referencedColumnName = "id")
-   private Student person = null;
+   private Person person1 = null;
 
 
 

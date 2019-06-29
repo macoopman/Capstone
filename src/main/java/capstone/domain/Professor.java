@@ -2,9 +2,8 @@ package capstone.domain;
 
 
 import lombok.Data;
-
 import javax.persistence.Entity;
-import java.util.Date;
+
 
 @Entity
 @Data
