@@ -7,10 +7,11 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+
 public class User {
 
    @Id
@@ -18,7 +19,6 @@ public class User {
    private long id;
 
    @Size(min = 2)
-   @UniqueElements
    @NotNull
    private String username;
 
@@ -26,12 +26,9 @@ public class User {
    @Size(min=8, max=20, message = "Password must be b/t {min} and {max}")
    private String password;
 
-   private String firstName;
-
-   private String lastName;
-
-   private Date dateJoined;
-
+   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+   @JoinColumn(name = "person_id", referencedColumnName = "id")
+   private Student person = null;
 
 
 
@@ -43,12 +40,7 @@ public class User {
 
       this.username = username;
       this.password = password;
-      this.firstName = firstName;
-      this.lastName = lastName;
    }
 
-   @PrePersist
-   void joinDate(){
-      this.dateJoined = new Date();
-   }
+
 }
