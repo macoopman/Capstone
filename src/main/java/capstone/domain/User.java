@@ -29,9 +29,8 @@ public class User {
 
    private Date dateJoined;
 
-   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-   @JoinColumn(name = "person_id", referencedColumnName = "id")
-   private Person person1 = null;
+   @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Person.class)
+   private Person user_data = null;
 
    @OneToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
    private List<Role> roles;

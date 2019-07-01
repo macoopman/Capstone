@@ -62,5 +62,7 @@
 
  ```
  
+ ### Passing Dates into session
  
+ To pass a date (start/end) into session (POST) make sure it is in the format "yyyy-mm-dd" as a string
  
