@@ -38,10 +38,6 @@ public class Person {
 
 
 
-//   protected Person() {
-//   }
-
-
    public Person(@NotNull String firstName, @NotNull String lastName, @Email String email) {
       this.firstName = firstName;
       this.lastName = lastName;

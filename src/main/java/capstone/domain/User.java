@@ -2,8 +2,6 @@ package capstone.domain;
 
 import capstone.security.domain.Role;
 import lombok.Data;
-import org.hibernate.validator.constraints.UniqueElements;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,7 +30,7 @@ public class User {
    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, targetEntity = Person.class)
    private Person user_data = null;
 
-   @OneToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
+   @ManyToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
    private List<Role> roles;
 
 
