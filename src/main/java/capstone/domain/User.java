@@ -1,6 +1,7 @@
 package capstone.domain;
 
 import capstone.security.domain.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -10,7 +11,7 @@ import java.util.List;
 
 @Data
 @Entity
-
+@Table(name = "security_user")
 public class User {
 
    @Id
@@ -21,6 +22,7 @@ public class User {
    @NotNull
    private String username;
 
+   @JsonIgnore
    @NotNull
    @Size(min=8, max=20, message = "Password must be b/t {min} and {max}")
    private String password;
@@ -40,10 +42,11 @@ public class User {
    public User() {
    }
 
-   public User(String username, String password, String firstName, String lastName) {
-
+   public User(@Size(min = 2) @NotNull String username, @NotNull @Size(min = 8, max = 20, message = "Password must be b/t {min} and {max}") String password, Person user_data, List<Role> roles) {
       this.username = username;
       this.password = password;
+      this.user_data = user_data;
+      this.roles = roles;
    }
 
    @PrePersist

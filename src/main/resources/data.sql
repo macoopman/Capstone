@@ -1,22 +1,22 @@
 
 
-
+-- Security Roles
 INSERT INTO role (id, role_name, description) VALUES (1, "ROLE_ADMIN", "Admin role");
 INSERT INTO role (id, role_name, description) VALUES (2, "ROLE_USER", "User role");
 
-
+-- Users
 INSERT INTO user(id, username, password, user_data_id) VALUES (1,"jbravo", "password", 1);
 INSERT INTO user(id, username, password, user_data_id) VALUES (2,"rbobby", "password", 2);
 INSERT INTO user(id, username, password, user_data_id) VALUES (3,"aeinstein", "password", 3);
 
-
+-- Students
 INSERT INTO student (id, first_name, last_name,  gpa, major, email) VALUES (1, "Johnny", "Bravo",  3.0, "Computer Science",  "bravo_jon@google.com");
 INSERT INTO student (id, first_name, last_name,  gpa, major, email) VALUES (2, "Ricky", "Bobby",  4.5, "Cooking", "bobby_ricky@first.com");
 
-
+-- Professors
 INSERT INTO professor(id, first_name, last_name, rating, email) VALUES (3,"Albert", "Einstein", 3.1, "einstein_albert@yale.edu");
 
-
+-- Assign security roles to users
 INSERT INTO user_roles(user_id, roles_id) Values (1,1);
 INSERT INTO user_roles(user_id, roles_id) Values (2,2);
 INSERT INTO user_roles(user_id, roles_id) Values (3,1);
