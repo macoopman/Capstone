@@ -24,7 +24,18 @@ INSERT INTO user_roles(user_id, roles_id) Values (3,2);
 
 
 
-INSERT INTO klass(id, subject) VALUES (1, "Networking");
+INSERT INTO klass(id, subject) VALUES (1, "Computer Science");
+
+
+INSERT INTO session(id, start_date, end_date, session_name) VALUES (1, "2019-01-15", "2019-02-15", "JAN_2019");
+INSERT INTO session(id, start_date, end_date, session_name) VALUES (2, "2019-02-15", "2019-03-15", "FEB_2019");
+INSERT INTO session(id, start_date, end_date, session_name) VALUES (3, "2019-04-15", "2019-05-15", "MAR_2019");
+
+INSERT INTO klass_session_list(klass_id, session_list_id ) VALUES (1,1);
+INSERT INTO klass_session_list(klass_id, session_list_id ) VALUES (1,2);
+INSERT INTO klass_session_list(klass_id, session_list_id ) VALUES (1,3);
+
+
 
 
 
