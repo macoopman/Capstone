@@ -5,9 +5,15 @@ INSERT INTO role (id, role_name, description) VALUES (1, "ROLE_ADMIN", "Admin ro
 INSERT INTO role (id, role_name, description) VALUES (2, "ROLE_USER", "User role");
 
 -- Users
-INSERT INTO user(id, username, password, user_data_id) VALUES (1,"jbravo", "password", 1);
-INSERT INTO user(id, username, password, user_data_id) VALUES (2,"rbobby", "password", 2);
-INSERT INTO user(id, username, password, user_data_id) VALUES (3,"aeinstein", "password", 3);
+INSERT INTO security_user(id, username, password, user_data_id) VALUES
+    (1,'jbravo','password', 1);
+
+--  '$2a$12$rSmJbpOVWHa9obhWFq8xiujx23LuMyvmjLvh00AyHhX70sN4H1KjK'  password
+INSERT INTO security_user(id, username, password, user_data_id) VALUES
+    (2,"rbobby","$2y$12$uElbfaG79Ta9SfX0H/HQYeeRXDx9/Xnol4EmWOz73W7nL6Vk8o7rS", 2);
+
+
+INSERT INTO security_user(id, username, password, user_data_id) VALUES (3,"aeinstein", "password", 3);
 
 -- Students
 INSERT INTO student (id, first_name, last_name,  gpa, major, email) VALUES (1, "Johnny", "Bravo",  3.0, "Computer Science",  "bravo_jon@google.com");

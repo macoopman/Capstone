@@ -1,6 +1,7 @@
 package capstone.security.domain;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,7 +10,7 @@ import javax.persistence.Id;
 
 @Entity
 @Data
-public class Role {
+public class Role implements GrantedAuthority {
 
    @Id
    @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,7 +20,10 @@ public class Role {
 
    private String roleName;
 
-
+   @Override
+   public String getAuthority() {
+      return roleName;
+   }
 }
 
 

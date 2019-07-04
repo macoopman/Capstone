@@ -54,5 +54,9 @@ public class User {
       this.dateJoined = new Date();
    }
 
+   public List<Role> getRoles() {
+      return roles;
+   }
+
 
 }
