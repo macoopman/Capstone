@@ -1,4 +1,4 @@
-package capstone.security.domain;
+package capstone.domain;
 
 import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;

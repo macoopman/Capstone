@@ -1,8 +1,9 @@
 package capstone.services;
 
+import capstone.domain.Role;
 import capstone.domain.User;
 import capstone.repositories.UserRepository;
-import capstone.security.repository.RoleRepository;
+import capstone.repositories.RoleRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +34,16 @@ public class UserService {
 
    public Authentication signin(String username, String password){
       return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+   }
+
+
+   public Optional<User> signup(String username, String password, String firstName, String lastName){
+      if(!userRepository.findByUsername(username).isPresent()){
+         Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
+         return Optional.of(userRepository.save(new User(username, passwordEncoder.encode(password), role.get())));
+
+      }
+      return Optional.empty();
    }
 
 

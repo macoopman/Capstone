@@ -1,6 +1,6 @@
 package capstone.security;
 
-import capstone.security.repository.RoleRepository;
+import capstone.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -30,6 +30,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
       // Only opens signin url - all else require login
       http.authorizeRequests()
          .antMatchers("/users/signin").permitAll()
+         .antMatchers("/users/signup").permitAll()
          .anyRequest().authenticated();
 
 
@@ -46,11 +47,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
       return super.authenticationManagerBean();
    }
 
-
+   //todo MUST BE CHANGED ...
    @Bean
    public PasswordEncoder passwordEncoder() {
-      //return new BCryptPasswordEncoder(12);
-      return  NoOpPasswordEncoder.getInstance();
+      return new BCryptPasswordEncoder(12);
+//      return  NoOpPasswordEncoder.getInstance();
    }
 
 }
