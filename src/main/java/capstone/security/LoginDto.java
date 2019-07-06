@@ -12,10 +12,6 @@ public class LoginDto {
    @NotNull
    private String password;
 
-   private String firstName;
-
-   private String lastName;
-
    /**
     * Default constructor
     */

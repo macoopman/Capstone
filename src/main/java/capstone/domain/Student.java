@@ -19,7 +19,7 @@ import java.util.Date;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 public class Student extends Person {
 
-   @Size(min=0, max=4)
+   //@Size(min=0, max=4)
    private double gpa;
 
    private String major;

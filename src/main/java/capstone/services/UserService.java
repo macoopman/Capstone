@@ -37,7 +37,7 @@ public class UserService {
    }
 
 
-   public Optional<User> signup(String username, String password, String firstName, String lastName){
+   public Optional<User> signup(String username, String password){
       if(!userRepository.findByUsername(username).isPresent()){
          Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
          return Optional.of(userRepository.save(new User(username, passwordEncoder.encode(password), role.get())));

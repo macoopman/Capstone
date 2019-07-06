@@ -28,8 +28,7 @@ public class UserController {
    @PostMapping("/signup")
    //@PreAuthorize("hasRole('ROLE_ADMIN')")
    public User signup(@RequestBody @Valid LoginDto loginDto){
-      return userService.signup(loginDto.getUsername(), loginDto.getPassword(), loginDto.getFirstName(),
-         loginDto.getLastName()).orElseThrow(() -> new RuntimeException("User already exists"));
+      return userService.signup(loginDto.getUsername(), loginDto.getPassword()).orElseThrow(() -> new RuntimeException("User already exists"));
    }
 
 
