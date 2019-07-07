@@ -8,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 import static org.springframework.security.core.userdetails.User.withUsername;
 
 @Component
@@ -15,6 +17,9 @@ public class CapstoneUserDetailsService implements UserDetailsService {
 
    @Autowired
    private UserRepository userRepository;
+
+   @Autowired
+   JwtProvider jwtProvider;
 
    @Override
    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
@@ -30,5 +35,19 @@ public class CapstoneUserDetailsService implements UserDetailsService {
          .credentialsExpired(false)
          .disabled(false)
          .build();
+   }
+
+   /**
+    * Extract the username from the JWT then lookup the user in the database.
+    *
+    * @param jwtToken
+    * @return
+    */
+   public Optional<UserDetails> loadUserByJwtTokenAndDatabase(String jwtToken) {
+      if (jwtProvider.isValidToken(jwtToken)) {
+         return Optional.of(loadUserByUsername(jwtProvider.getUsername(jwtToken)));
+      } else {
+         return Optional.empty();
+      }
    }
 }

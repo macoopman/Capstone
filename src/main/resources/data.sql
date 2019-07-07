@@ -4,10 +4,10 @@
 INSERT INTO role (id, role_name, description) VALUES (1, "ROLE_ADMIN", "Admin role");
 INSERT INTO role (id, role_name, description) VALUES (2, "ROLE_USER", "User role");
 
--- Users: password / $2a$12$Ia0grhCgJ2EmBqaxk99ZHuzvzLbnxo/AoplcncyK4FBydNQomWYf6
+-- Users: password / $2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e
 
-INSERT INTO security_user(id, username, password) VALUES (1,'jbravo','$2a$12$Ia0grhCgJ2EmBqaxk99ZHuzvzLbnxo/AoplcncyK4FBydNQomWYf6');
-INSERT INTO security_user(id, username, password) VALUES (2,"rbobby","$2a$12$Ia0grhCgJ2EmBqaxk99ZHuzvzLbnxo/AoplcncyK4FBydNQomWYf6 ");
+INSERT INTO security_user(id, username, password) VALUES (1000,'admin','$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e');
+INSERT INTO security_user(id, username, password) VALUES (1001,"rbobby","$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e ");
 -- INSERT INTO security_user(id, username, password, user_data_id) VALUES (3, 'aeinstein', '$2a$12$Ia0grhCgJ2EmBqaxk99ZHuzvzLbnxo/AoplcncyK4FBydNQomWYf6 ', 3);
 
 -- Students
@@ -18,10 +18,10 @@ INSERT INTO student (id, first_name, last_name,  gpa, major, email) VALUES (2, '
 -- INSERT INTO professor(id, first_name, last_name, rating, email) VALUES (3,"Albert", "Einstein", 3.1, "einstein_albert@yale.edu");
 
 -- Assign security roles to users
-INSERT INTO user_roles(user_id, roles_id) Values (1,1);
-INSERT INTO user_roles(user_id, roles_id) Values (2,2);
-INSERT INTO user_roles(user_id, roles_id) Values (3,1);
-INSERT INTO user_roles(user_id, roles_id) Values (3,2);
+INSERT INTO security_user_roles(user_id, roles_id) Values (1000,1);
+INSERT INTO security_user_roles(user_id, roles_id) Values (2,2);
+INSERT INTO security_user_roles(user_id, roles_id) Values (3,1);
+INSERT INTO security_user_roles(user_id, roles_id) Values (3,2);
 
 
 

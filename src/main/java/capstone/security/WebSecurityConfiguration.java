@@ -12,14 +12,16 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 
 @Configuration
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
+
    @Autowired
-   RoleRepository roleRepository;
+   CapstoneUserDetailsService userDetailsService;
 
 
 
@@ -30,9 +32,8 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
       // Only opens signin url - all else require login
       http.authorizeRequests()
          .antMatchers("/users/signin").permitAll()
-         .antMatchers("/users/signup").permitAll()
-//         .anyRequest().authenticated();
-         .anyRequest().permitAll();
+         .anyRequest().authenticated();
+
 
 
       // Disable CSRF (cross site request forgery)
@@ -40,6 +41,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
       // No session will be created or used
       http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+
+      // Start back up implementing the jwt filter
+      http.addFilterBefore(new JwtTokenFilter(userDetailsService), UsernamePasswordAuthenticationFilter.class);
    }
 
    @Bean
@@ -48,11 +53,12 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
       return super.authenticationManagerBean();
    }
 
-   //todo MUST BE CHANGED ...
    @Bean
    public PasswordEncoder passwordEncoder() {
       return new BCryptPasswordEncoder(12);
-//      return  NoOpPasswordEncoder.getInstance();
    }
+
+
+
 
 }

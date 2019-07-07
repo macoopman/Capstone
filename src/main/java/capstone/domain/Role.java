@@ -1,6 +1,8 @@
 package capstone.domain;
 
 import lombok.Data;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.Entity;
