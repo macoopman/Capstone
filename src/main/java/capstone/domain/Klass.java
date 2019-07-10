@@ -27,13 +27,9 @@ public class Klass {
    @Length(max = 3)
    private String classNumber;
 
-//   @NotNull
-//   private String subjectAbbreviation;
-
 
    @ManyToMany(targetEntity = Session.class)
    List<Session> sessionList;
 
-   // TODO: 7/2/19 Build library of all subject abbrevations  ?
 
 }

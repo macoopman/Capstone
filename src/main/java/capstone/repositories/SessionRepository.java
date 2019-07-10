@@ -5,8 +5,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Repository;
 
-//@Repository
-//@Secured("ROLE_ADMIN")
+@Repository
 public interface SessionRepository extends CrudRepository<Session, Long> {
 
 }

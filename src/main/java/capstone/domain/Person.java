@@ -20,20 +20,15 @@ public class Person {
    @GeneratedValue(strategy = GenerationType.AUTO)
    private Long id;
 
-   @NotNull
+//   @NotNull
    private String firstName;
 
-   @NotNull
    private String lastName;
 
-   @Email
+//   @Email
    private String email;
 
-
-
-//
-//   @OneToOne(targetEntity = User.class)
-//   private User user;
+   private Date dateJoined;
 
 
 
@@ -43,4 +38,10 @@ public class Person {
       this.lastName = lastName;
       this.email = email;
    }
+
+   @PrePersist
+   void joinDate(){
+      this.dateJoined = new Date();
+   }
+
 }

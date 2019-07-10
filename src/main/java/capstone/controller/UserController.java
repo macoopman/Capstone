@@ -6,6 +6,7 @@ import capstone.security.LoginDto;
 import capstone.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +30,6 @@ public class UserController {
    }
 
    @PostMapping("/signup")
-//   @PreAuthorize("hasRole('ROLE_ADMIN')")
    public User signup(@RequestBody @Valid LoginDto loginDto){
       return userService.signup(loginDto.getUsername(), loginDto.getPassword()).orElseThrow(() -> new RuntimeException("User already exists"));
    }

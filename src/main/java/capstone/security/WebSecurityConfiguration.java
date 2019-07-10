@@ -31,8 +31,10 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
       // Entry Points
       // Only opens signin url - all else require login
       http.authorizeRequests()
-         .antMatchers("/users/signin").permitAll()
-         .anyRequest().authenticated();
+//         .antMatchers("/users/signin").permitAll()
+//         .antMatchers("/swagger-ui.html").permitAll()
+//         .anyRequest().authenticated();
+            .anyRequest().permitAll();
 
 
 
