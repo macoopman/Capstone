@@ -1,4 +1,4 @@
-package capstone.security;
+package capstone.dto;
 
 import lombok.Data;
 

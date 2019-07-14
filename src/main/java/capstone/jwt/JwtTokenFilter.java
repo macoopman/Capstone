@@ -1,5 +1,6 @@
-package capstone.security;
+package capstone.jwt;
 
+import capstone.services.CapstoneUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.context.SecurityContextHolder;

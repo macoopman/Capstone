@@ -1,6 +1,7 @@
 package capstone.security;
 
-import capstone.repositories.RoleRepository;
+import capstone.jwt.JwtTokenFilter;
+import capstone.services.CapstoneUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,6 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -40,6 +40,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
       // Disable CSRF (cross site request forgery)
       http.csrf().disable();
+
 
       // No session will be created or used
       http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

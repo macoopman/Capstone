@@ -18,17 +18,24 @@ public class User {
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
 
+
    private String username;
 
-
+   @JsonIgnore
    private String password;
 
+   @JsonIgnore
+   private String salt;
 
    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
    private List<Role> roles;
 
    @OneToOne(targetEntity = Person.class)
-   private Person user_data;
+   private Person userData;
+
+
+
+
 
 
    public User() { }

@@ -1,4 +1,4 @@
-package capstone.security;
+package capstone.jwt;
 
 import capstone.domain.Role;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,5 +1,6 @@
 package capstone.domain;
 
+import capstone.repositories.PersonRepository;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -16,23 +17,16 @@ import java.util.Locale;
 @Data
 public class Session {
 
+
+
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long id;
-
-
    private String sessionName;
+   private LocalDate startDate;
+   private LocalDate endDate;
 
-   private LocalDate start_date;
-
-   private LocalDate end_date;
-
-
-
-//   private double rating;
-
-
-   @ManyToMany(targetEntity = Student.class)
+   @ManyToMany(cascade = CascadeType.ALL, targetEntity = Student.class)
    private List<Student> students;
 
    @ManyToMany(targetEntity = Professor.class)
@@ -43,13 +37,14 @@ public class Session {
 
 
 
-
    @PostPersist
    void buildSessionName(){
-      String month = cleanMonth(start_date.getMonth());
-      int beginYear = start_date.getYear();
+      String month = cleanMonth(startDate.getMonth());
+      int beginYear = startDate.getYear();
       this.sessionName = month + "_" + beginYear;;
    }
+
+
 
 
    /**

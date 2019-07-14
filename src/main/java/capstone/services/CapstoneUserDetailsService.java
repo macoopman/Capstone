@@ -1,6 +1,7 @@
-package capstone.security;
+package capstone.services;
 
 import capstone.domain.User;
+import capstone.jwt.JwtProvider;
 import capstone.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
