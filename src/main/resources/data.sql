@@ -7,13 +7,13 @@ INSERT INTO role (id, role_name, description) VALUES (2, "ROLE_USER", "User role
 -- Users: password / $2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e
 
 INSERT INTO security_user(id, username, password) VALUES (900,'admin','$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e');
-INSERT INTO security_user(id, username, password, user_data_id) VALUES (100,'John_Bravo','$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e',100);
+INSERT INTO security_user(id, username, password, salt, user_data_id) VALUES (100,'John_Bravo','$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e','12345', 100);
 INSERT INTO security_user(id, username, password, user_data_id) VALUES (101,'RBobby','$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e',101);
 INSERT INTO security_user(id, username, password, user_data_id) VALUES (102,'HSimpson','$2a$12$CxcNa0EYyx9E1ifQopdBP.eRx4NurdDs7pcBJUTFa1TY4hwdAIM8e',102 );
 INSERT INTO security_user(id, username, password, user_data_id) VALUES (103, 'aeinstein', '$2a$12$Ia0grhCgJ2EmBqaxk99ZHuzvzLbnxo/AoplcncyK4FBydNQomWYf6 ', 103);
 
 -- Students
-INSERT INTO student (id, first_name, last_name,  gpa, major, email, date_joined, current_department_id) VALUES (100, 'Johnny', 'Bravo',  3.0, 'Computer Science',  'bravo_jon@google.com', '2019-02-07 05:18:55',1);
+INSERT INTO student (id, first_name, last_name,  gpa, major, email, date_joined,  current_department_id) VALUES (100, 'Johnny', 'Bravo',  3.0, 'Computer Science',  'bravo_jon@google.com', '2019-02-07 05:18:55', 1);
 INSERT INTO student (id, first_name, last_name,  gpa, major, email, date_joined, current_department_id) VALUES (101, 'Ricky', 'Bobby',  3.9, 'Computer Science', 'bobby_ricky@first.com',  '2019-01-07 05:18:55', 1);
 INSERT INTO student (id, first_name, last_name,  gpa, major, email, date_joined, current_department_id) VALUES (102, 'Homer', 'Simpson',  3.2, 'Computer Science', 'homer_simpson@springfield.com',  '2017-07-07 05:18:55', 1);
 

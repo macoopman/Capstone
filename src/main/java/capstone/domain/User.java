@@ -2,6 +2,8 @@ package capstone.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -33,11 +35,6 @@ public class User {
    @OneToOne(targetEntity = Person.class)
    private Person userData;
 
-
-
-
-
-
    public User() { }
 
 
@@ -52,5 +49,10 @@ public class User {
       return roles;
    }
 
+//
+//   @PrePersist
+//   void setSalt(){
+//      this.salt = BCrypt.gensalt(12);
+//   }
 
 }

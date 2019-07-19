@@ -2,12 +2,19 @@ package capstone.services;
 
 import capstone.domain.*;
 import capstone.dto.UserDto;
+import capstone.error_message.ErrorMessage;
+import capstone.error_message.ErrorMessages;
+import capstone.exceptions.FailedLoginException;
+import capstone.exceptions.MissingFieldsException;
+import capstone.exceptions.UserServiceException;
+import capstone.exceptions.UsernameExistException;
 import capstone.repositories.KlassRepository;
 import capstone.repositories.SessionRepository;
 import capstone.repositories.UserRepository;
 import capstone.repositories.RoleRepository;
 
 import capstone.jwt.JwtProvider;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -31,6 +38,8 @@ public class UserService {
    private SessionRepository sessionRepository;
    private KlassRepository klassRepository;
 
+
+
    @Autowired
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
@@ -45,26 +54,27 @@ public class UserService {
    }
 
    public UserDto signin(String username, String password){
-      //return authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+
       Optional<String> token = Optional.empty();
-      // Query for security_users table for the username
       Optional<User> user = userRepository.findByUsername(username);
 
-      if(user.isPresent()) {
-         try{
-            // authenticate the user
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
+      // Check if Username and Password were given
+      if(null == username || null == password) throw new MissingFieldsException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
 
-            // create a new token for the user
-            token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
+      // Check if User Exists
+      if(!user.isPresent()) throw new FailedLoginException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
 
-         } catch (AuthenticationException e) {
-            // log ?
-         }
-      }
+      // Authenticate User
+      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
 
-      // Build Login DTO Data
+      // create a new token for the user
+      token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
+
+
+      // Build Custom Return Data
       UserDto userDto = new UserDto();
+
+      if( user.get().getUserData() != null){
          userDto.setUsername(user.get().getUsername());
          userDto.setUserId(user.get().getId());
          userDto.setJwtToken(token.get());
@@ -85,24 +95,32 @@ public class UserService {
          // Set Current Class
          Optional<Klass> currentClass = klassRepository.findKlassBySessionListId(session.get().get(0).getId());
          userDto.setCurrentClassNumberId((currentClass.get().getId()));
-
-
+      }
 
       return userDto;
    }
 
 
-   public Optional<User> signup(String username, String password){
-      if(!userRepository.findByUsername(username).isPresent()){
-         Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
-         return Optional.of(userRepository.save(new User(username, passwordEncoder.encode(password), role.get())));
+   /**
+    * Register new user
+    *
+    * @param username
+    * @param password
+    * @return a new user object to be returned by the request
+    * @throws Exception thows exception if user already exists
+    */
+   public Optional<User> register(String username, String password) throws Exception{
+      // Check if user exists
+      if(userRepository.findByUsername(username).isPresent()) throw new UsernameExistException(ErrorMessages.USERNAME_ALREADY_EXISTS.getErrorMessage());
 
-      }
-      return Optional.empty();
+      Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
+      userRepository.save(new User(username, passwordEncoder.encode(password), role.get()));
+
+      return userRepository.findByUsername(username);
+
    }
 
 
-   // helper methods
 
 
 }
