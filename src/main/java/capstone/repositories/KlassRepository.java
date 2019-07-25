@@ -12,5 +12,5 @@ import java.util.Optional;
 
 @Repository
 public interface KlassRepository extends PagingAndSortingRepository<Klass, Long> {
-   Optional<Klass> findKlassBySessionListId(long id);
+//   Optional<Klass> findKlassBySessionsId(long id);
 }

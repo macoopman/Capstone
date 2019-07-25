@@ -16,6 +16,7 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
+//@DiscriminatorValue("1")
 public class Student extends Person {
 
    private double gpa;
@@ -23,17 +24,9 @@ public class Student extends Person {
    private String major;
 
 
-
-
-
-
-   public Student(@NotNull String firstName, @NotNull String lastName, @Email String email, double gpa, String major) {
-      super(firstName, lastName, email);
+   public Student(Long id, String firstName, String lastName, String email, double gpa, String major) {
+      super(id, firstName, lastName, email);
       this.gpa = gpa;
       this.major = major;
    }
-
-
-
-
 }

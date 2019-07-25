@@ -3,6 +3,7 @@ package capstone.controller;
 
 import capstone.domain.User;
 import capstone.dto.LoginDto;
+import capstone.dto.RegisterDto;
 import capstone.dto.UserDto;
 import capstone.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,8 @@ public class UserController {
    }
 
    @PostMapping("/register")
-   public Optional<User> register(@RequestBody @Valid LoginDto loginDto) throws Exception{
-      return userService.register(loginDto.getUsername(), loginDto.getPassword());
+   public Optional<User> register(@RequestBody @Valid RegisterDto registerDto) throws Exception{
+      return userService.register(registerDto.getUsername(), registerDto.getPassword(), registerDto.getUserType());
    }
 
 

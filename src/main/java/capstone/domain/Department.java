@@ -18,8 +18,11 @@ public class Department {
    private String departmentAbbreviation;
    private String departmentName;
 
-   @ManyToMany
-   List<Klass> departmentClasses;
+
+
+   @OneToMany(mappedBy = "department")
+   private List<Klass> departmentClasses;
+
 
    public Department(){}
 

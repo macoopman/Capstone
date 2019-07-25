@@ -28,8 +28,15 @@ public class Klass {
    private String classNumber;
 
 
-   @ManyToMany(targetEntity = Session.class)
-   List<Session> sessionList;
+
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name="department_id")
+   private Department department;
+
+
+   @OneToMany(mappedBy = "klass")
+   private List<Session> sessions;
+
 
 
 }

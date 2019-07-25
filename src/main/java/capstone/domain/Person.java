@@ -19,35 +19,37 @@ import java.util.*;
 public class Person {
 
    @Id
-   @GeneratedValue(strategy = GenerationType.AUTO)
    private Long id;
 
    private String firstName;
 
    private String lastName;
 
-   @Email
+
    private String email;
 
 
    private Date dateJoined;
 
-
-   @OneToOne(targetEntity = Department.class)
-   private Department currentDepartment;
-
-   @OneToOne(targetEntity = Klass.class)
-   private Klass currentClass;
-
-   @OneToOne(targetEntity = Session.class)
-   private Session sessionsList;
+   @OneToOne(mappedBy="userData")
+   private User user;
 
 
-   public Person(@NotNull String firstName, @NotNull String lastName, @Email String email) {
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name = "student_id")
+   private Session currentSession;
+
+
+
+
+
+
+
+   public Person(Long id, String firstName, String lastName, String email) {
+      this.id = id;
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
-
    }
 
    @PrePersist

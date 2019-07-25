@@ -2,6 +2,9 @@ package capstone.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.springframework.data.rest.core.annotation.RestResource;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
 import javax.persistence.*;
@@ -32,16 +35,20 @@ public class User {
    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
    private List<Role> roles;
 
-   @OneToOne(targetEntity = Person.class)
+
+   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+   @JoinColumn(name = "person_id", unique = true)
    private Person userData;
 
    public User() { }
 
 
-   public User(@Size(min = 2) @NotNull String username, @NotNull @Size(min = 8, max = 20, message = "Password must be b/t {min} and {max}") String password, Role role) {
+   public User(@Size(min = 2) @NotNull String username, @NotNull @Size(min = 8, max = 20, message = "Password must be b/t {min} and {max}") String password, Role role, Person userData) {
       this.username = username;
       this.password = password;
       this.roles = Arrays.asList(role);
+      this.userData = userData;
+      this.userData.setUser(this);
    }
 
 
@@ -49,10 +56,10 @@ public class User {
       return roles;
    }
 
-//
-//   @PrePersist
-//   void setSalt(){
-//      this.salt = BCrypt.gensalt(12);
-//   }
+
+   @PrePersist
+   void setSalt(){
+      this.salt = BCrypt.gensalt(12);
+   }
 
 }

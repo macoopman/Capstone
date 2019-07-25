@@ -1,6 +1,7 @@
 package capstone.repositories;
 
 import capstone.domain.Session;
+import capstone.domain.Student;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Repository;
@@ -13,9 +14,6 @@ import java.util.Optional;
 
 @Repository
 public interface SessionRepository extends CrudRepository<Session, Long> {
-      Optional<List<Session>> findSessionByStudentsIdOrderByStartDateDesc(long id);
-
-
-
+//      Optional<List<Session>> findSessionByStudentsIdOrderByStartDateDesc(long id);
 
 }

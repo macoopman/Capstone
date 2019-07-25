@@ -9,9 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.TextStyle;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Entity
 @Data
@@ -26,12 +24,21 @@ public class Session {
    private LocalDate startDate;
    private LocalDate endDate;
 
-   @ManyToMany(cascade = CascadeType.ALL, targetEntity = Student.class)
+
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name="class_id")
+   private Klass klass;
+
+
+   @OneToMany(mappedBy = "currentSession")
    private List<Student> students;
 
-   @ManyToMany(targetEntity = Professor.class)
+
+   @OneToMany(mappedBy = "currentSession")
    private List<Professor> professors;
 
+
+   // NOT Implemented Yet
    @ManyToMany(targetEntity = Comment.class)
    private List<Comment> comments;
 
@@ -41,7 +48,7 @@ public class Session {
    void buildSessionName(){
       String month = cleanMonth(startDate.getMonth());
       int beginYear = startDate.getYear();
-      this.sessionName = month + "_" + beginYear;;
+      this.sessionName =  month + "_" + beginYear;
    }
 
 
