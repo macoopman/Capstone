@@ -1,7 +1,11 @@
-package capstone.exceptions;
+package capstone.error_message;
 
 
-import capstone.error_message.ErrorMessage;
+import capstone.dto.ErrorMessageDto;
+import capstone.exceptions.FailedLoginException;
+import capstone.exceptions.InvaildEmailException;
+import capstone.exceptions.MissingFieldsException;
+import capstone.exceptions.UsernameExistException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,7 +31,7 @@ public class AppExceptionsHandler {
     */
    @ExceptionHandler(value = {UsernameExistException.class})
    public ResponseEntity<Object> handleExistingUsernameException(Exception ex, WebRequest request){
-      ErrorMessage message = new ErrorMessage(new Date(), ex.getMessage());
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
       System.out.println("------------------------------------------");
       return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.CONFLICT );
    }
@@ -43,7 +47,7 @@ public class AppExceptionsHandler {
     */
    @ExceptionHandler(value = {FailedLoginException.class})
    public ResponseEntity<Object> handleFailedLoginException(Exception ex, WebRequest request){
-      ErrorMessage message = new ErrorMessage(new Date(), ex.getMessage());
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
       return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.BAD_REQUEST);
    }
 
@@ -59,8 +63,22 @@ public class AppExceptionsHandler {
     */
    @ExceptionHandler(value = {MissingFieldsException.class})
    public ResponseEntity<Object> handleMissingFieldsException(Exception ex, WebRequest request){
-      ErrorMessage message = new ErrorMessage(new Date(), ex.getMessage());
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
       return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.FORBIDDEN);
+   }
+
+   // Invalid Email Errors -------------------------------------------------------------------------------------------
+   /**
+    * Handle Missing Fields in Request
+    *
+    * @param ex
+    * @param request
+    * @return response message
+    */
+   @ExceptionHandler(value = {InvaildEmailException.class})
+   public ResponseEntity<Object> handleInvalidEmailException(Exception ex, WebRequest request){
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
+      return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.NOT_FOUND);
    }
 
 
@@ -75,7 +93,7 @@ public class AppExceptionsHandler {
 
 //   @ExceptionHandler(value = {Exception.class})
 //   public ResponseEntity<Object> handleOtherExceptions(Exception ex, WebRequest request){
-//      ErrorMessage message = new ErrorMessage(new Date(), ex.getMessage());
+//      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
 //      return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR );
 //   }
 }

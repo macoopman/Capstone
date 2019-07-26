@@ -2,12 +2,8 @@ package capstone.services;
 
 import capstone.domain.*;
 import capstone.dto.UserDto;
-import capstone.error_message.ErrorMessage;
 import capstone.error_message.ErrorMessages;
-import capstone.exceptions.FailedLoginException;
-import capstone.exceptions.MissingFieldsException;
-import capstone.exceptions.UserServiceException;
-import capstone.exceptions.UsernameExistException;
+import capstone.exceptions.*;
 import capstone.repositories.*;
 import capstone.jwt.JwtProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +12,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -138,7 +133,7 @@ public class UserService {
    }
 
    public void recover(String email){
-      if(! userRepository.findByEmail(email).isPresent()) throw new
+      if(! userRepository.findByEmail(email).isPresent()) throw new InvaildEmailException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
 
 
    }

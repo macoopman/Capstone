@@ -1,4 +1,4 @@
-package capstone.error_message;
+package capstone.dto;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,15 +8,15 @@ import java.util.Date;
 
 @Data
 
-public class ErrorMessage {
+public class ErrorMessageDto {
 
    private Date timestamp;
    private String message;
 
-   public ErrorMessage() {
+   public ErrorMessageDto() {
    }
 
-   public ErrorMessage(Date timestamp, String message) {
+   public ErrorMessageDto(Date timestamp, String message) {
       this.timestamp = timestamp;
       this.message = message;
    }
