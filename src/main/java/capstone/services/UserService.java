@@ -138,7 +138,7 @@ public class UserService {
    }
 
    public void recover(String email){
-
+      if(! userRepository.findByEmail(email).isPresent()) throw new
 
 
    }
