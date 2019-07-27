@@ -2,17 +2,26 @@ package capstone.services;
 
 import capstone.domain.*;
 import capstone.dto.UserDto;
+import capstone.email.EmailService;
 import capstone.error_message.ErrorMessages;
 import capstone.exceptions.*;
 import capstone.repositories.*;
 import capstone.jwt.JwtProvider;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.mail.*;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Properties;
+
 import java.util.Optional;
+
 
 @Service
 public class UserService {
@@ -27,6 +36,7 @@ public class UserService {
    private JwtProvider jwtProvider;
    private SessionRepository sessionRepository;
    private KlassRepository klassRepository;
+   private PersonRepository personRepository;
 
 
 
@@ -34,7 +44,8 @@ public class UserService {
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
                       SessionRepository sessionRepository, KlassRepository klassRepository,
-                      ProfessorRepository professorRepository,StudentRepository studentRepository ) {
+                      ProfessorRepository professorRepository,StudentRepository studentRepository,
+                      PersonRepository personRepository) {
       this.userRepository = userRepository;
       this.professorRepository = professorRepository;
       this.studentRepository = studentRepository;
@@ -44,6 +55,7 @@ public class UserService {
       this.jwtProvider = jwtProvider;
       this.sessionRepository = sessionRepository;
       this.klassRepository = klassRepository;
+      this.personRepository = personRepository;
    }
 
    public UserDto signin(String username, String password){
@@ -132,13 +144,47 @@ public class UserService {
 
    }
 
-   public void recover(String email){
-      if(! userRepository.findByEmail(email).isPresent()) throw new InvaildEmailException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+   public void recover(String username, String email) throws Exception{
 
+      User recoverUser = getRecoverUser(username, email);
+      EmailService emailService = new EmailService();
 
+      String tempPassword = RandomStringUtils.random(10, true, true);
+      recoverUser.setPassword(passwordEncoder.encode(tempPassword + recoverUser.getSalt()));
+      userRepository.save(recoverUser);
+
+      emailService.sendRecoveryMessage(recoverUser, tempPassword);
    }
 
 
+
+
+
+
+   private User getRecoverUser(String username, String email) {
+      Optional<User> user = userRepository.findByUsername(username);
+      Optional<Student> student = studentRepository.findStudentByEmail(email);
+      Optional<Professor> professor = professorRepository.findProfessorByEmail(email);
+      User recoverUser = null;
+
+      if(null != username){
+         if(!user.isPresent()) throw new UserServiceException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+         recoverUser = user.get();
+      }
+
+
+      if(null != email){
+         if (!student.isPresent() && !professor.isPresent()) throw new InvaildEmailException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+
+         if(student.isPresent()){
+            recoverUser = student.get().getUser();
+         }
+         else{
+            recoverUser = professor.get().getUser();
+         }
+      }
+      return recoverUser;
+   }
 
 
 }

@@ -11,6 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface StudentRepository extends PagingAndSortingRepository<Student, Long> {
-
+   Optional<Student> findStudentByEmail(String email);
 }
 
