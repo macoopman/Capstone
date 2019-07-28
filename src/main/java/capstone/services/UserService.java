@@ -31,6 +31,7 @@ public class UserService {
    private RoleRepository roleRepository;
    private PasswordEncoder passwordEncoder;
    private JwtProvider jwtProvider;
+   private EmailService emailService;
 
 
 
@@ -38,7 +39,8 @@ public class UserService {
    @Autowired
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
-                      ProfessorRepository professorRepository,StudentRepository studentRepository) {
+                      ProfessorRepository professorRepository,StudentRepository studentRepository,
+                      EmailService emailService) {
       this.userRepository = userRepository;
       this.professorRepository = professorRepository;
       this.studentRepository = studentRepository;
@@ -46,6 +48,7 @@ public class UserService {
       this.roleRepository = roleRepository;
       this.passwordEncoder = passwordEncoder;
       this.jwtProvider = jwtProvider;
+      this.emailService = emailService;
 
    }
 
@@ -146,7 +149,7 @@ public class UserService {
    public RecoverReturnDto recover(String username, String email) throws Exception{
 
       User recoverUser = getRecoverUser(username, email);
-      EmailService emailService = new EmailService();
+//      EmailService emailService = new EmailService();
       String tempPassword = RandomStringUtils.random(10, true, true);
       String hashedPassword = passwordEncoder.encode(tempPassword);
       recoverUser.setPassword(hashedPassword);
