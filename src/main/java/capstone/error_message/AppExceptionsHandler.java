@@ -79,7 +79,13 @@ public class AppExceptionsHandler {
    }
 
 
-
+   /**
+    * Error handling for Invalid Id Exceptions
+    *
+    * @param ex
+    * @param request
+    * @return response message - message, headers, status=NOT_FOUND
+    */
    @ExceptionHandler(value = {InvalidIdException.class})
    public ResponseEntity<Object> handleIdMissingException(Exception ex, WebRequest request){
       ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
@@ -87,9 +93,16 @@ public class AppExceptionsHandler {
    }
 
 
+   /**
+    * Error handling for Invalid Temp Password
+    *
+    * @param exception
+    * @param request
+    * @return return Bad Request status
+    */
    @ExceptionHandler(value = {InvalidTempPassException.class})
-   public ResponseEntity<Object> handleInvalidTempPassException(Exception ex, WebRequest request){
-      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
+   public ResponseEntity<Object> handleInvalidTempPassException(Exception exception, WebRequest request){
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), exception.getMessage());
       return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.BAD_REQUEST);
    }
 

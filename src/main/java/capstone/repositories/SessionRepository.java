@@ -14,6 +14,5 @@ import java.util.Optional;
 
 @Repository
 public interface SessionRepository extends CrudRepository<Session, Long> {
-//      Optional<List<Session>> findSessionByStudentsIdOrderByStartDateDesc(long id);
 
 }

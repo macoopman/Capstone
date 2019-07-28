@@ -8,6 +8,7 @@ import capstone.error_message.ErrorMessages;
 import capstone.exceptions.*;
 import capstone.repositories.*;
 import capstone.jwt.JwtProvider;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,18 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.mail.*;
-import javax.mail.Session;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
-import java.util.Properties;
-
 import java.util.Optional;
 
 
 @Service
+@Slf4j
 public class UserService {
-   //private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
    private UserRepository userRepository;
    private ProfessorRepository professorRepository;
@@ -36,18 +31,14 @@ public class UserService {
    private RoleRepository roleRepository;
    private PasswordEncoder passwordEncoder;
    private JwtProvider jwtProvider;
-   private SessionRepository sessionRepository;
-   private KlassRepository klassRepository;
-   private PersonRepository personRepository;
+
 
 
 
    @Autowired
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
-                      SessionRepository sessionRepository, KlassRepository klassRepository,
-                      ProfessorRepository professorRepository,StudentRepository studentRepository,
-                      PersonRepository personRepository) {
+                      ProfessorRepository professorRepository,StudentRepository studentRepository) {
       this.userRepository = userRepository;
       this.professorRepository = professorRepository;
       this.studentRepository = studentRepository;
@@ -55,9 +46,7 @@ public class UserService {
       this.roleRepository = roleRepository;
       this.passwordEncoder = passwordEncoder;
       this.jwtProvider = jwtProvider;
-      this.sessionRepository = sessionRepository;
-      this.klassRepository = klassRepository;
-      this.personRepository = personRepository;
+
    }
 
    public UserDto signin(String username, String password){
@@ -203,7 +192,6 @@ public class UserService {
          if(!user.isPresent()) throw new InvalidRecoverException(ErrorMessages.RECOVERY_FAILED.getErrorMessage());
          recoverUser = user.get();
       }
-
 
       if(null != email){
          if (!student.isPresent() && !professor.isPresent()) throw new InvalidRecoverException(ErrorMessages.RECOVERY_FAILED.getErrorMessage());

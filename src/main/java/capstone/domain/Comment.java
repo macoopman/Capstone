@@ -21,4 +21,5 @@ public class Comment {
 
    // TODO: 7/9/19 determine more attributes
    // TODO: 7/9/19 add list of other comments for replies
+
 }

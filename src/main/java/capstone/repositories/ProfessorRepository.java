@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProfessorRepository extends JpaRepository<Professor, Long> {
+public interface ProfessorRepository extends PagingAndSortingRepository<Professor, Long> {
    Optional<Professor> findProfessorByEmail(String email);
 
 }

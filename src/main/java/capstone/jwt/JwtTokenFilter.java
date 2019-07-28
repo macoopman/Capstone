@@ -26,7 +26,7 @@ public class JwtTokenFilter extends GenericFilterBean {
    }
 
    /**
-    * Determin if there is a JWT as part of the HTTP Request Header.
+    * Determine if there is a JWT as part of the HTTP Request Header.
     * If it is vaild then set the current context with the Authentication (user and roles) found in the token
     *
     * @param servletRequest

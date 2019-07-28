@@ -18,9 +18,7 @@ public class UserController {
 
    @PostMapping("/signin")
    public UserDto login(@RequestBody LoginDto loginDto) {
-      String username = loginDto.getUsername();
-      String password = loginDto.getPassword();
-      return userService.signin(username, password);
+      return userService.signin(loginDto.getUsername(), loginDto.getPassword());
    }
 
    @PostMapping("/register")

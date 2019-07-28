@@ -8,6 +8,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 
+import java.time.Clock;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -50,6 +53,7 @@ public class JwtProvider {
                   .setExpiration(new Date(now.getTime() + validityInMilliseconds))
                   .signWith(SignatureAlgorithm.HS256, secretKey)
                   .compact();
+
    }
 
 

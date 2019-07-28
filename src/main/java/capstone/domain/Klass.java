@@ -1,6 +1,6 @@
 package capstone.domain;
 
-import capstone.enums.Subject;
+
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.UniqueElements;
