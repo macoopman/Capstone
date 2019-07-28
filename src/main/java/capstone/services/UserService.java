@@ -70,9 +70,9 @@ public class UserService {
       // Check if User Exists
       if(!user.isPresent()) throw new FailedLoginException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
 
-      String salt = user.get().getSalt();
+
       // Authenticate User
-      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password + salt ));
+      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password ));
 
       // create a new token for the user
       Optional<String> token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
@@ -123,7 +123,7 @@ public class UserService {
       if(0 == userType){
          userRepository.save(new User(username, passwordEncoder.encode(password), role.get(), new Professor(tempId, "", "", "", 0)));
          Optional<User> newUser = userRepository.findByUsername(username);
-         newUser.get().setPassword(passwordEncoder.encode(password + newUser.get().getSalt()));
+         newUser.get().setPassword(passwordEncoder.encode(password));
          newUser.get().setUserData(new Professor(newUser.get().getId(), "dummy", "dummy", "dummy@gmail.com", 1.0));
 
          Optional<Professor> deleteMe = professorRepository.findById(tempId);
@@ -132,7 +132,7 @@ public class UserService {
       else if(1 == userType){
          userRepository.save(new User(username, passwordEncoder.encode(password), role.get(), new Student(tempId, "", "", "", 0, "")));
          Optional<User> newUser = userRepository.findByUsername(username);
-         newUser.get().setPassword(passwordEncoder.encode(password + newUser.get().getSalt()));
+         newUser.get().setPassword(passwordEncoder.encode(password));
          newUser.get().setUserData(new Student(newUser.get().getId(), "dummy", "dummy", "dummy@gmail.com", 1.0,  "dummy_major"));
 
          Optional<Student> deleteMe = studentRepository.findById(tempId);
@@ -159,7 +159,7 @@ public class UserService {
       User recoverUser = getRecoverUser(username, email);
       EmailService emailService = new EmailService();
       String tempPassword = RandomStringUtils.random(10, true, true);
-      String hashedPassword = passwordEncoder.encode(tempPassword + recoverUser.getSalt());
+      String hashedPassword = passwordEncoder.encode(tempPassword);
       recoverUser.setPassword(hashedPassword);
       userRepository.save(recoverUser);
       emailService.sendRecoveryMessage(recoverUser, tempPassword);
@@ -178,7 +178,7 @@ public class UserService {
       Optional<User> user = userRepository.findById(userId);
       if(!user.isPresent()) throw new InvalidIdException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
       if(!isTempMatch(tempPass, user.get())) throw new InvalidTempPassException(ErrorMessages.INVALID_TEMP_PASS.getErrorMessage());
-      user.get().setPassword(passwordEncoder.encode(newPass + user.get().getSalt()));
+      user.get().setPassword(passwordEncoder.encode(newPass));
       userRepository.save(user.get());
    }
 
@@ -190,7 +190,7 @@ public class UserService {
    // helper methods
 
    private boolean isTempMatch(String tempPass, User user){
-      return BCrypt.checkpw(tempPass + user.getSalt(), user.getPassword());
+      return BCrypt.checkpw(tempPass, user.getPassword());
    }
 
    private User getRecoverUser(String username, String email) {
