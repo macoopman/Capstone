@@ -32,6 +32,10 @@ public class User {
    @JsonIgnore
    private String salt;
 
+   @JsonIgnore
+   private String tempSalt;
+
+
    @ManyToMany(fetch = FetchType.EAGER, targetEntity = Role.class)
    private List<Role> roles;
 
@@ -60,6 +64,17 @@ public class User {
    @PrePersist
    void setSalt(){
       this.salt = BCrypt.gensalt(12);
+   }
+
+   @PreUpdate
+   void preUpdate(){
+      this.tempSalt = salt;
+
+   }
+
+   @PostUpdate
+   void postUpdate(){
+      this.salt = tempSalt;
    }
 
 }

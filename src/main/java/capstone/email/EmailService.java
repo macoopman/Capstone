@@ -59,7 +59,7 @@ public class EmailService {
          message.setSubject("Password Reset - Whiteboard");
          message.setText(
             "Dear " + user.getUserData().getFirstName() + "\n\n" +
-            "\tForgot your password. That's ok. \n\n" +
+            "Forgot your password. That's ok. \n\n" +
             "Temp Password: " + tempPassword  + "\n\n" +
             "Enter temp password when in app \n\n\n " +
             "WhiteBoard Team ");

@@ -2,10 +2,7 @@ package capstone.error_message;
 
 
 import capstone.dto.ErrorMessageDto;
-import capstone.exceptions.FailedLoginException;
-import capstone.exceptions.InvaildEmailException;
-import capstone.exceptions.MissingFieldsException;
-import capstone.exceptions.UsernameExistException;
+import capstone.exceptions.*;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -67,22 +64,42 @@ public class AppExceptionsHandler {
       return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.FORBIDDEN);
    }
 
-   // Invalid Email Errors -------------------------------------------------------------------------------------------
+   // Password Recovery Errors -------------------------------------------------------------------------------------------
    /**
-    * Handle Missing Fields in Request
+    * Handle Invalid Username or password
     *
     * @param ex
     * @param request
     * @return response message
     */
-   @ExceptionHandler(value = {InvaildEmailException.class})
-   public ResponseEntity<Object> handleInvalidEmailException(Exception ex, WebRequest request){
+   @ExceptionHandler(value = {InvalidRecoverException.class})
+   public ResponseEntity<Object> handleRecoveryException(Exception ex, WebRequest request){
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
+      return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.BAD_REQUEST);
+   }
+
+
+
+   @ExceptionHandler(value = {InvalidIdException.class})
+   public ResponseEntity<Object> handleIdMissingException(Exception ex, WebRequest request){
       ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
       return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.NOT_FOUND);
    }
 
 
+   @ExceptionHandler(value = {InvalidTempPassException.class})
+   public ResponseEntity<Object> handleInvalidTempPassException(Exception ex, WebRequest request){
+      ErrorMessageDto message = new ErrorMessageDto(new Date(), ex.getMessage());
+      return new ResponseEntity<>(message ,new HttpHeaders(), HttpStatus.BAD_REQUEST);
+   }
 
+
+
+
+
+
+
+   // All Other Errors -------------------------------------------------------------------------------------------
    /**
     * Handle all other exceptions that do not have custom handling
     *

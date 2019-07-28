@@ -1,6 +1,7 @@
 package capstone.services;
 
 import capstone.domain.*;
+import capstone.dto.RecoverReturnDto;
 import capstone.dto.UserDto;
 import capstone.email.EmailService;
 import capstone.error_message.ErrorMessages;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -144,22 +146,52 @@ public class UserService {
 
    }
 
-   public void recover(String username, String email) throws Exception{
+   /**
+    * Recover password and update database
+    * only username OR email are required
+    *
+    * @param username username of user
+    * @param email email of users
+    * @throws Exception
+    */
+   public RecoverReturnDto recover(String username, String email) throws Exception{
 
       User recoverUser = getRecoverUser(username, email);
       EmailService emailService = new EmailService();
-
       String tempPassword = RandomStringUtils.random(10, true, true);
-      recoverUser.setPassword(passwordEncoder.encode(tempPassword + recoverUser.getSalt()));
+      String hashedPassword = passwordEncoder.encode(tempPassword + recoverUser.getSalt());
+      recoverUser.setPassword(hashedPassword);
       userRepository.save(recoverUser);
-
       emailService.sendRecoveryMessage(recoverUser, tempPassword);
+
+      return new RecoverReturnDto(recoverUser.getId());
+   }
+
+
+   /**
+    * Provided a valid temp password and a new password reset password in database
+    *
+    * @param tempPass
+    * @param newPass
+    */
+   public void reset(long userId, String tempPass, String newPass){
+      Optional<User> user = userRepository.findById(userId);
+      if(!user.isPresent()) throw new InvalidIdException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+      if(!isTempMatch(tempPass, user.get())) throw new InvalidTempPassException(ErrorMessages.INVALID_TEMP_PASS.getErrorMessage());
+      user.get().setPassword(passwordEncoder.encode(newPass + user.get().getSalt()));
+      userRepository.save(user.get());
    }
 
 
 
 
 
+
+   // helper methods
+
+   private boolean isTempMatch(String tempPass, User user){
+      return BCrypt.checkpw(tempPass + user.getSalt(), user.getPassword());
+   }
 
    private User getRecoverUser(String username, String email) {
       Optional<User> user = userRepository.findByUsername(username);
@@ -168,13 +200,13 @@ public class UserService {
       User recoverUser = null;
 
       if(null != username){
-         if(!user.isPresent()) throw new UserServiceException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+         if(!user.isPresent()) throw new InvalidRecoverException(ErrorMessages.RECOVERY_FAILED.getErrorMessage());
          recoverUser = user.get();
       }
 
 
       if(null != email){
-         if (!student.isPresent() && !professor.isPresent()) throw new InvaildEmailException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+         if (!student.isPresent() && !professor.isPresent()) throw new InvalidRecoverException(ErrorMessages.RECOVERY_FAILED.getErrorMessage());
 
          if(student.isPresent()){
             recoverUser = student.get().getUser();

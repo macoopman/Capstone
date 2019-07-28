@@ -23,18 +23,13 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-
    @Autowired
    CapstoneUserDetailsService userDetailsService;
-
-
 
 
    @Override
    protected void configure(HttpSecurity http) throws Exception {
 
-      // Entry Points
-      // Only opens signin url - all else require login
       http.authorizeRequests()
 //         .antMatchers("/users/signin").permitAll()
 //         .antMatchers("/swagger-ui.html").permitAll()
