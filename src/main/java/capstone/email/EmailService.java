@@ -41,9 +41,6 @@ public class EmailService {
 
 
 
-
-
-
    public void sendRecoveryMessage(User user, String tempPassword){
       Properties prop = new Properties();
       prop.put("mail.smtp.host", host);

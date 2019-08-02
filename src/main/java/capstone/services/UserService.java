@@ -115,17 +115,18 @@ public class UserService {
       if(0 == userType){
          userRepository.save(new User(username, passwordEncoder.encode(password), role.get(), new Professor(tempId, "", "", "", 0)));
          Optional<User> newUser = userRepository.findByUsername(username);
-         newUser.get().setPassword(passwordEncoder.encode(password));
          newUser.get().setUserData(new Professor(newUser.get().getId(), "dummy", "dummy", "dummy@gmail.com", 1.0));
-
          Optional<Professor> deleteMe = professorRepository.findById(tempId);
          professorRepository.delete(deleteMe.get());
       }
       else if(1 == userType){
+
+
+
          userRepository.save(new User(username, passwordEncoder.encode(password), role.get(), new Student(tempId, "", "", "", 0, "")));
          Optional<User> newUser = userRepository.findByUsername(username);
-         newUser.get().setPassword(passwordEncoder.encode(password));
-         newUser.get().setUserData(new Student(newUser.get().getId(), "dummy", "dummy", "dummy@gmail.com", 1.0,  "dummy_major"));
+         Long id = newUser.get().getId();
+         newUser.get().setUserData(new Student(id, "dummy", "dummy", "dummy@gmail.com", 1.0,  "dummy_major"));
 
          Optional<Student> deleteMe = studentRepository.findById(tempId);
          studentRepository.delete(deleteMe.get());
@@ -149,7 +150,6 @@ public class UserService {
    public RecoverReturnDto recover(String username, String email) throws Exception{
 
       User recoverUser = getRecoverUser(username, email);
-//      EmailService emailService = new EmailService();
       String tempPassword = RandomStringUtils.random(10, true, true);
       String hashedPassword = passwordEncoder.encode(tempPassword);
       recoverUser.setPassword(hashedPassword);

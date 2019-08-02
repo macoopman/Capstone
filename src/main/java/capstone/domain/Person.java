@@ -17,9 +17,8 @@ import java.util.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Person {
-
    @Id
-   private Long id;
+   private long id;
 
    private String firstName;
 

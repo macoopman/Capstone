@@ -2,7 +2,6 @@ package capstone.domain;
 
 
 import lombok.Data;
-
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
@@ -30,5 +29,15 @@ public class Department {
       this.departmentAbbreviation = departmentAbbreviation;
       this.departmentName = departmentName;
       this.departmentClasses = Arrays.asList(departmentClasses);
+   }
+
+   @Override
+   public String toString() {
+      return "Department{" +
+         "id=" + id +
+         ", departmentAbbreviation='" + departmentAbbreviation + '\'' +
+         ", departmentName='" + departmentName + '\'' +
+         ", departmentClasses=" + departmentClasses +
+         '}';
    }
 }

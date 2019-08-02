@@ -44,6 +44,15 @@ public class Session {
 
 
 
+
+
+   // Holds the answers to the question
+
+
+
+
+
+
    @PostPersist
    void buildSessionName(){
       String month = cleanMonth(startDate.getMonth());

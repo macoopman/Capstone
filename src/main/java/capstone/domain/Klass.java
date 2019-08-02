@@ -1,14 +1,16 @@
 package capstone.domain;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.rest.core.annotation.RestResource;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.util.List;
 
 
@@ -24,7 +26,7 @@ public class Klass {
    @NotNull
    private String subject;
 
-   @Length(max = 3)
+   @Length(max = 4)
    private String classNumber;
 
 
@@ -37,6 +39,11 @@ public class Klass {
    @OneToMany(mappedBy = "klass")
    private List<Session> sessions;
 
+
+   // Holds a list of questions - 1 set for each week
+
+   @OneToMany(mappedBy = "klass")
+   private List<ELOQuestion> questions;
 
 
 }

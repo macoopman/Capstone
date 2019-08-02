@@ -16,7 +16,6 @@ import java.util.Date;
 @Entity
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-//@DiscriminatorValue("1")
 public class Student extends Person {
 
    private double gpa;

@@ -10,6 +10,7 @@ public enum ErrorMessages {
    AUTHENTICATION_FAILED("Authentication failed"),
    RECOVERY_FAILED("Username or email are invalid"),
    INVALID_TEMP_PASS("Invalid temp password"),
+   CLASS_NUM_DOES_NOT_EXIST("Class Number does not exist"),
    COULD_NOT_UPDATE_RECORD("Could not update record"),
    COULD_NOT_DELETE_RECORD("Could not delete record"),
    EMAIL_ADDRESS_NOT_VERIFIED("Email address could not be verified");
