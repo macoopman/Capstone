@@ -1,12 +1,8 @@
 package capstone.domain;
 
-import capstone.repositories.PersonRepository;
 import lombok.Data;
-
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -42,11 +38,8 @@ public class Session {
    @ManyToMany(targetEntity = Comment.class)
    private List<Comment> comments;
 
-
-
-
-
-   // Holds the answers to the question
+   @ElementCollection(targetClass=ELOAnswer.class)
+   private List<ELOAnswer> answers;
 
 
 
@@ -54,13 +47,18 @@ public class Session {
 
 
    @PostPersist
-   void buildSessionName(){
+   void postPersist(){
+      buildDate();
+   }
+
+
+
+
+   private void buildDate() {
       String month = cleanMonth(startDate.getMonth());
       int beginYear = startDate.getYear();
       this.sessionName =  month + "_" + beginYear;
    }
-
-
 
 
    /**

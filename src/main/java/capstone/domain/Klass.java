@@ -45,5 +45,8 @@ public class Klass {
    @OneToMany(mappedBy = "klass")
    private List<ELOQuestion> questions;
 
+   public void appendSession(Session session){
+      sessions.add(session);
+   }
 
 }

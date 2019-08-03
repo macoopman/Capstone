@@ -1,4 +1,4 @@
-FROM java:8
+FROM java:11
 WORKDIR /
 EXPOSE 8080
 ADD target/capstone-0.0.1-SNAPSHOT.jar //
