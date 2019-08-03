@@ -7,6 +7,7 @@ import capstone.services.ClassService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.PostUpdate;
 import javax.validation.Valid;
 
 @RestController
@@ -25,5 +26,6 @@ public class ClassController {
    public void addSession(@PathVariable("id") Long id, @RequestBody @Valid SessionAddDto dto){
       classService.addSession(id, dto.getStartDate(), dto.getEndDate());
    }
+
 
 }

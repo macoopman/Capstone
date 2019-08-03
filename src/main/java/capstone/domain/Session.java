@@ -39,7 +39,7 @@ public class Session {
    private List<Comment> comments;
 
    @ElementCollection(targetClass=ELOAnswer.class)
-   private List<ELOAnswer> answers;
+   private List<ELOAnswer> questionAndAnswers;
 
 
 

@@ -51,7 +51,7 @@ public class ClassService {
          answers.add(answer);
          eloAnswerRepository.save(answer);
       }
-      session.setAnswers(answers);
+      session.setQuestionAndAnswers(answers);
       session.setKlass(klass.get());
       session.setKlass(klass.get());
       klass.get().appendSession(session);
@@ -59,4 +59,6 @@ public class ClassService {
       sessionRepository.save(session);
 
    }
+
+
 }

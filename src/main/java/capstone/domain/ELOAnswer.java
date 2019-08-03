@@ -1,5 +1,6 @@
 package capstone.domain;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +14,7 @@ public class ELOAnswer {
 
    @Id
    @GeneratedValue(strategy = GenerationType.AUTO)
-   private long id;
+   private long Id;
 
    @OneToOne(targetEntity = ELOQuestion.class)
    private ELOQuestion question;
@@ -30,5 +31,9 @@ public class ELOAnswer {
       this.question = question;
       this.answers = answers;
       this.numOfResponses = numOfResponses;
+   }
+
+   public long getId() {
+      return Id;
    }
 }
