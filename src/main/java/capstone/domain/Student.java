@@ -22,6 +22,8 @@ public class Student extends Person {
 
    private String major;
 
+   // HOLDS LIST OF ANSWERS
+
 
    public Student(Long id, String firstName, String lastName, String email, double gpa, String major) {
       super(id, firstName, lastName, email);

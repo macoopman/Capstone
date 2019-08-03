@@ -40,7 +40,6 @@ public class Klass {
    private List<Session> sessions;
 
 
-   // Holds a list of questions - 1 set for each week
 
    @OneToMany(mappedBy = "klass")
    private List<ELOQuestion> questions;

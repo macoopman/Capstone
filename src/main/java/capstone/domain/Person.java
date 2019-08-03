@@ -39,6 +39,8 @@ public class Person {
    private Session currentSession;
 
 
+   @OneToMany(mappedBy = "klass")
+   List<ELOQuestion> questions;
 
 
 
