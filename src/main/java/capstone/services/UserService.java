@@ -214,6 +214,21 @@ public class UserService {
       userRepository.save(user.get());
    }
 
+   public void updateLearningStyle(long userId, long learningStyleId, String updatedValue) {
+      Optional<Student> student = studentRepository.findById(userId);
+
+      List<LearningStyleAnswers> answersList = student.get().getLearningStyleAnswersList();
+
+      for(LearningStyleAnswers answer : answersList){
+         if(answer.getId() == learningStyleId){
+            answer.setAnswers(Long.parseLong(updatedValue));
+            learningStyleAnswerRepository.save(answer);
+         }
+      }
+
+
+   }
+
 
 
 

@@ -38,6 +38,11 @@ public class UserController {
       return userService.addAdmin(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail());
    }
 
+   @PostMapping("/{userId}/updateLearningStyle/{learningStyleId}")
+   public void updateLearningStyle(@PathVariable("userId") long userId, @PathVariable("learningStyleId") long learningStyleId, @RequestBody UpdateLearningStyleDto dto){
+      userService.updateLearningStyle(userId, learningStyleId, dto.getUpdatedValue());
+   }
+
    @PostMapping("/recover")
    public RecoverReturnDto recover(@RequestBody PasswordRecoverDto dto ) throws Exception {
          return userService.recover(dto.getUsername(), dto.getEmail());
