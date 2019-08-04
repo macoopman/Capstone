@@ -24,6 +24,9 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
 
+   public static final String DUMMY_STRING = "dummy";
+   public static final String DUMMY_EMAIL = "dummy@dum.com";
+   public static final int DUMMY_DOUBLE = 2;
    private UserRepository userRepository;
    private ProfessorRepository professorRepository;
    private StudentRepository studentRepository;
@@ -32,8 +35,7 @@ public class UserService {
    private PasswordEncoder passwordEncoder;
    private JwtProvider jwtProvider;
    private EmailService emailService;
-
-
+   private static final Long TEMP_ID = 999999L;
 
 
    @Autowired
@@ -95,48 +97,40 @@ public class UserService {
    }
 
 
-   /**
-    * Register new user
-    *
-    * @param username
-    * @param password
-    * @return a new user object to be returned by the request
-    * @throws Exception thows exception if user already exists
-    */
-   public Optional<User> register(String username, String password, int userType) throws Exception{
-
-      if(userRepository.findByUsername(username).isPresent()) throw new UsernameExistException(ErrorMessages.USERNAME_ALREADY_EXISTS.getErrorMessage());
-
+   public Optional<User> addStudent(String firstName, String lastName, String password, String email, String gpa, String major) {
+      validateEmail(email);
       Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
-      Long tempId = 9999999L;
+      User user = userRepository.save(new User(DUMMY_STRING, password, role.get(), new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING)));
+      user.setUserData(new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major));
+      user.setUsername(buildUniqueUserName(user));
+
+      Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
+      studentRepository.delete(deleteMe.get());
+      return userRepository.findByUsername(user.getUsername());
+
+   }
 
 
-      // create professor
-      if(0 == userType){
-         userRepository.save(new User(username, passwordEncoder.encode(password), role.get(), new Professor(tempId, "", "", "", 0)));
-         Optional<User> newUser = userRepository.findByUsername(username);
-         newUser.get().setUserData(new Professor(newUser.get().getId(), "dummy", "dummy", "dummy@gmail.com", 1.0));
-         Optional<Professor> deleteMe = professorRepository.findById(tempId);
-         professorRepository.delete(deleteMe.get());
-      }
-      else if(1 == userType){
+   public Optional<User> addProfessor(String firstName, String lastName, String password, String email, String rating) {
+      validateEmail(email);
+      Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
 
+      User user = userRepository.save( new User(DUMMY_STRING,password, role.get(), new Professor(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE)));
 
+      user.setUserData( new Professor(user.getId(),firstName, lastName, email, Double.parseDouble(rating)));
+      user.setUsername(buildUniqueUserName(user));
 
-         userRepository.save(new User(username, passwordEncoder.encode(password), role.get(), new Student(tempId, "", "", "", 0, "")));
-         Optional<User> newUser = userRepository.findByUsername(username);
-         Long id = newUser.get().getId();
-         newUser.get().setUserData(new Student(id, "dummy", "dummy", "dummy@gmail.com", 1.0,  "dummy_major"));
+      Optional<Professor> deleteMe = professorRepository.findById(TEMP_ID);
+      professorRepository.delete(deleteMe.get());
+      return userRepository.findByUsername(user.getUsername());
+   }
 
-         Optional<Student> deleteMe = studentRepository.findById(tempId);
-         studentRepository.delete(deleteMe.get());
-      }
-      else{ // create student
-         throw new UserServiceException(ErrorMessages.INTERNAL_SERVER_ERROR.getErrorMessage());
-      }
-
-      return userRepository.findByUsername(username);
-
+   private String buildUniqueUserName(User user) {
+      StringBuilder username = new StringBuilder();
+      username.append(user.getUserData().getFirstName().substring(0,1));
+      username.append(user.getUserData().getLastName());
+      username.append(user.getId());
+      return username.toString();
    }
 
    /**
@@ -207,6 +201,14 @@ public class UserService {
          }
       }
       return recoverUser;
+   }
+
+
+
+
+
+   private void validateEmail(String email) {
+      if(studentRepository.findStudentByEmail(email).isPresent()) throw new UserServiceException(ErrorMessages.RECORED_ALREADY_EXISTS.getErrorMessage());
    }
 
 

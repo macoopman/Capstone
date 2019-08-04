@@ -1,6 +1,9 @@
 package capstone.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.SimpleObjectIdResolver;
 import lombok.Data;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
@@ -17,6 +20,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "security_user")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class User {
 
    @Id
@@ -41,7 +45,7 @@ public class User {
    public User() { }
 
 
-   public User(@Size(min = 2) @NotNull String username, @NotNull @Size(min = 8, max = 20, message = "Password must be b/t {min} and {max}") String password, Role role, Person userData) {
+   public User(@NotNull String username, @NotNull @Size(min = 8, max = 20, message = "Password must be b/t {min} and {max}") String password, Role role, Person userData) {
       this.username = username;
       this.password = password;
       this.roles = Arrays.asList(role);

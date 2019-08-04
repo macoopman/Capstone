@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
-//@DiscriminatorValue("0")
 public class Professor extends Person {
 
    // TODO: 6/30/19 determine rating scale

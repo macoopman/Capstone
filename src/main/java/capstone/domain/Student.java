@@ -24,10 +24,14 @@ public class Student extends Person {
 
    // HOLDS LIST OF ANSWERS
 
+//   List<LearningStyleAnswers> learningStyleAnswersList;
+
 
    public Student(Long id, String firstName, String lastName, String email, double gpa, String major) {
       super(id, firstName, lastName, email);
       this.gpa = gpa;
       this.major = major;
    }
+
+
 }

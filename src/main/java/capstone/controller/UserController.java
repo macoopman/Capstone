@@ -21,10 +21,24 @@ public class UserController {
       return userService.signin(loginDto.getUsername(), loginDto.getPassword());
    }
 
-   @PostMapping("/register")
-   public Optional<User> register(@RequestBody @Valid RegisterDto registerDto) throws Exception{
-      return userService.register(registerDto.getUsername(), registerDto.getPassword(), registerDto.getUserType());
+
+
+   @PostMapping("/addStudent")
+   public Optional<User> addStudent(@RequestBody @Valid AddStudentDto dto){
+      return userService.addStudent(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail(), dto.getGpa(), dto.getMajor());
    }
+
+   @PostMapping("/addProfessor")
+   public Optional<User> addProfession(@RequestBody @Valid AddProfessorDto dto){
+      return userService.addProfessor(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail(), dto.getRating());
+   }
+
+
+
+
+
+
+
 
    @PostMapping("/recover")
    public RecoverReturnDto recover(@RequestBody PasswordRecoverDto dto ) throws Exception {

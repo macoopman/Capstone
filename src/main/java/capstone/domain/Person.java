@@ -1,5 +1,7 @@
 package capstone.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,9 @@ import java.util.*;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Person {
+
    @Id
    private long id;
 
@@ -58,7 +62,14 @@ public class Person {
       this.dateJoined = new Date();
    }
 
-
+   @PostPersist
+   void postPersist(){
+//      StringBuilder userNameNew = new StringBuilder();
+//      userNameNew.append(firstName.substring(0,1));
+//      userNameNew.append(lastName);
+//      userNameNew.append(id);
+//      this.getUser().setUsername(userNameNew.toString());
+   }
 
 
 
