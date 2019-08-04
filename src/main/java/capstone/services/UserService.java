@@ -17,6 +17,9 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -27,6 +30,7 @@ public class UserService {
    public static final String DUMMY_STRING = "dummy";
    public static final String DUMMY_EMAIL = "dummy@dum.com";
    public static final int DUMMY_DOUBLE = 2;
+   private static final Long TEMP_ID = 999999L;
    private UserRepository userRepository;
    private ProfessorRepository professorRepository;
    private StudentRepository studentRepository;
@@ -36,15 +40,19 @@ public class UserService {
    private JwtProvider jwtProvider;
    private EmailService emailService;
    private AdminRepository adminRepository;
+   private LearningStyleQuestionRepository learningStyleQuestionRepository;
+   private LearningStyleAnswerRepository learningStyleAnswerRepository;
 
-   private static final Long TEMP_ID = 999999L;
+
 
 
    @Autowired
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
                       ProfessorRepository professorRepository,StudentRepository studentRepository,
-                      EmailService emailService, AdminRepository adminRepository) {
+                      EmailService emailService, AdminRepository adminRepository,
+                      LearningStyleQuestionRepository learningStyleQuestionRepository,
+                      LearningStyleAnswerRepository learningStyleAnswerRepository) {
       this.userRepository = userRepository;
       this.professorRepository = professorRepository;
       this.studentRepository = studentRepository;
@@ -54,6 +62,8 @@ public class UserService {
       this.jwtProvider = jwtProvider;
       this.emailService = emailService;
       this.adminRepository = adminRepository;
+      this.learningStyleQuestionRepository = learningStyleQuestionRepository;
+      this.learningStyleAnswerRepository = learningStyleAnswerRepository;
 
    }
 
@@ -102,12 +112,27 @@ public class UserService {
    public Optional<User> addStudent(String firstName, String lastName, String password, String email, String gpa, String major) {
       validateEmail(email);
       Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
-      User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(), new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING)));
-      user.setUserData(new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major));
+      List<LearningStyleAnswers> learningStyleAnswers = new LinkedList<>();
+      User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
+         new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING, learningStyleAnswers
+         )));
+
+      Iterable<LearningStyleQuestion> learningStyleQuestions = learningStyleQuestionRepository.findAll();
+
+      for (LearningStyleQuestion question : learningStyleQuestions ){
+         LearningStyleAnswers answer = new LearningStyleAnswers(question,0);
+         learningStyleAnswers.add(answer);
+         learningStyleAnswerRepository.save(answer);
+      }
+
+      Student student = new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major, learningStyleAnswers);
+
+      user.setUserData(student);
       user.setUsername(buildUniqueUserName(user));
 
       Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
       studentRepository.delete(deleteMe.get());
+
       return userRepository.findByUsername(user.getUsername());
    }
 
@@ -123,8 +148,12 @@ public class UserService {
 
       Optional<Professor> deleteMe = professorRepository.findById(TEMP_ID);
       professorRepository.delete(deleteMe.get());
+
       return userRepository.findByUsername(user.getUsername());
    }
+
+
+
 
    public Optional<User> addAdmin(String firstName, String lastName, String password, String email) {
       Optional<Role> role = roleRepository.findByRoleName("ROLE_ADMIN");
@@ -135,6 +164,7 @@ public class UserService {
 
       Optional<Admin> deleteMe = adminRepository.findById(TEMP_ID);
       adminRepository.delete(deleteMe.get());
+
       return userRepository.findByUsername(user.getUsername());
    }
 
