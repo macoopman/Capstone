@@ -18,7 +18,6 @@ import java.util.*;
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public class Person {
 
    @Id

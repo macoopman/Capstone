@@ -35,6 +35,8 @@ public class UserService {
    private PasswordEncoder passwordEncoder;
    private JwtProvider jwtProvider;
    private EmailService emailService;
+   private AdminRepository adminRepository;
+
    private static final Long TEMP_ID = 999999L;
 
 
@@ -42,7 +44,7 @@ public class UserService {
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
                       ProfessorRepository professorRepository,StudentRepository studentRepository,
-                      EmailService emailService) {
+                      EmailService emailService, AdminRepository adminRepository) {
       this.userRepository = userRepository;
       this.professorRepository = professorRepository;
       this.studentRepository = studentRepository;
@@ -51,6 +53,7 @@ public class UserService {
       this.passwordEncoder = passwordEncoder;
       this.jwtProvider = jwtProvider;
       this.emailService = emailService;
+      this.adminRepository = adminRepository;
 
    }
 
@@ -79,16 +82,15 @@ public class UserService {
       userDto.setUsername(user.get().getUsername());
       userDto.setUserId(user.get().getId());
       userDto.setJwtToken(token.get());
+      String userType = user.get().getUserData().toString();
+      userType = userType.substring(0, userType.indexOf("(")).toLowerCase();
+      userDto.setUserType(userType + "s");
 
-      if(null != user.get().getUserData().getCurrentSession()){
-         String userType = user.get().getUserData().toString();
-         userType = userType.substring(0, userType.indexOf("(")).toLowerCase();
-         userDto.setUserType(userType + "s");
-         userDto.setCurrentDepartmentId(user.get().getUserData().getCurrentSession().getKlass().getId());
-         userDto.setCurrentSessionNumberId(user.get().getUserData().getCurrentSession().getId());
-         userDto.setCurrentClassNumberId(user.get().getUserData().getCurrentSession().getKlass().getId());
-      } else {
-         userDto.setUserType("admin");
+
+      if(null == user.get().getUserData().getCurrentSession()) {
+         userDto.setCurrentDepartmentId(null);
+         userDto.setCurrentSessionNumberId(null);
+         userDto.setCurrentClassNumberId(null);
       }
 
 
@@ -100,14 +102,13 @@ public class UserService {
    public Optional<User> addStudent(String firstName, String lastName, String password, String email, String gpa, String major) {
       validateEmail(email);
       Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
-      User user = userRepository.save(new User(DUMMY_STRING, password, role.get(), new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING)));
+      User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(), new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING)));
       user.setUserData(new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major));
       user.setUsername(buildUniqueUserName(user));
 
       Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
       studentRepository.delete(deleteMe.get());
       return userRepository.findByUsername(user.getUsername());
-
    }
 
 
@@ -115,7 +116,7 @@ public class UserService {
       validateEmail(email);
       Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
 
-      User user = userRepository.save( new User(DUMMY_STRING,password, role.get(), new Professor(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE)));
+      User user = userRepository.save( new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Professor(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE)));
 
       user.setUserData( new Professor(user.getId(),firstName, lastName, email, Double.parseDouble(rating)));
       user.setUsername(buildUniqueUserName(user));
@@ -124,6 +125,21 @@ public class UserService {
       professorRepository.delete(deleteMe.get());
       return userRepository.findByUsername(user.getUsername());
    }
+
+   public Optional<User> addAdmin(String firstName, String lastName, String password, String email) {
+      Optional<Role> role = roleRepository.findByRoleName("ROLE_ADMIN");
+      User user = userRepository.save(new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Admin(TEMP_ID,DUMMY_STRING, DUMMY_STRING,DUMMY_EMAIL)));
+      user.setUserData(new Admin(user.getId(),firstName, lastName, email));
+      user.setUsername(buildUniqueUserName(user));
+
+
+      Optional<Admin> deleteMe = adminRepository.findById(TEMP_ID);
+      adminRepository.delete(deleteMe.get());
+      return userRepository.findByUsername(user.getUsername());
+   }
+
+
+
 
    private String buildUniqueUserName(User user) {
       StringBuilder username = new StringBuilder();
@@ -210,6 +226,7 @@ public class UserService {
    private void validateEmail(String email) {
       if(studentRepository.findStudentByEmail(email).isPresent()) throw new UserServiceException(ErrorMessages.RECORED_ALREADY_EXISTS.getErrorMessage());
    }
+
 
 
 }

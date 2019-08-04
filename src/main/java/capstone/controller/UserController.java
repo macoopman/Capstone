@@ -33,12 +33,10 @@ public class UserController {
       return userService.addProfessor(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail(), dto.getRating());
    }
 
-
-
-
-
-
-
+   @PostMapping("/addAdmin")
+   public Optional<User> addAdmin(@RequestBody @Valid AddAdminDto dto){
+      return userService.addAdmin(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail());
+   }
 
    @PostMapping("/recover")
    public RecoverReturnDto recover(@RequestBody PasswordRecoverDto dto ) throws Exception {
