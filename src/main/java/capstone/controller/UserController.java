@@ -21,20 +21,18 @@ public class UserController {
       return userService.signin(loginDto.getUsername(), loginDto.getPassword());
    }
 
-
-
    @PostMapping("/addStudent")
-   public Optional<User> addStudent(@RequestBody @Valid AddStudentDto dto){
+   public Optional<User> addStudent(@RequestBody @Valid NewStudentDto dto){
       return userService.addStudent(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail(), dto.getGpa(), dto.getMajor());
    }
 
    @PostMapping("/addProfessor")
-   public Optional<User> addProfession(@RequestBody @Valid AddProfessorDto dto){
+   public Optional<User> addProfession(@RequestBody @Valid NewProfessorDto dto){
       return userService.addProfessor(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail(), dto.getRating());
    }
 
    @PostMapping("/addAdmin")
-   public Optional<User> addAdmin(@RequestBody @Valid AddAdminDto dto){
+   public Optional<User> addAdmin(@RequestBody @Valid NewAdminDto dto){
       return userService.addAdmin(dto.getFirstName(), dto.getLastName(), dto.getPassword(), dto.getEmail());
    }
 

@@ -38,7 +38,7 @@ public class Person {
 
 
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-   @JoinColumn(name = "student_id")
+   @JoinColumn(name = "user_Id")
    private Session currentSession;
 
 
@@ -61,14 +61,7 @@ public class Person {
       this.dateJoined = new Date();
    }
 
-   @PostPersist
-   void postPersist(){
-//      StringBuilder userNameNew = new StringBuilder();
-//      userNameNew.append(firstName.substring(0,1));
-//      userNameNew.append(lastName);
-//      userNameNew.append(id);
-//      this.getUser().setUsername(userNameNew.toString());
-   }
+
 
 
 

@@ -1,10 +1,5 @@
 package capstone.domain;
 
-
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.rest.core.annotation.RestResource;
@@ -29,6 +24,8 @@ public class Klass {
    @Length(max = 4)
    private String classNumber;
 
+   @Lob
+   private String description;
 
 
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

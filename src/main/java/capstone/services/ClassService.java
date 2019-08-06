@@ -41,10 +41,27 @@ public class ClassService {
    public void addSession(Long id, LocalDate startDate, LocalDate endDate) {
       Optional<Klass> klass = klassRepository.findById(id);
       if(!klass.isPresent()) throw new InvalidIdException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+      Session session = createSession(startDate, endDate, klass);
+      klass.get().appendSession(session);
+      klassRepository.save(klass.get());
+      sessionRepository.save(session);
+
+   }
+
+
+   // Helper Methods
+   private Session createSession(LocalDate startDate, LocalDate endDate, Optional<Klass> klass) {
       Session session = new Session();
       session.setStartDate(startDate);
       session.setEndDate(endDate);
 
+      updateList(klass, session);
+      session.setKlass(klass.get());
+      session.setKlass(klass.get());
+      return session;
+   }
+
+   private void updateList(Optional<Klass> klass, Session session) {
       List<ELOAnswer> answers = new LinkedList<>();
       for (ELOQuestion question : klass.get().getQuestions()){
          ELOAnswer answer = new ELOAnswer(question, 0,0);
@@ -52,12 +69,6 @@ public class ClassService {
          eloAnswerRepository.save(answer);
       }
       session.setQuestionAndAnswers(answers);
-      session.setKlass(klass.get());
-      session.setKlass(klass.get());
-      klass.get().appendSession(session);
-      klassRepository.save(klass.get());
-      sessionRepository.save(session);
-
    }
 
 

@@ -20,7 +20,7 @@ import java.util.List;
 @Data
 @Entity
 @Table(name = "security_user")
-//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+//@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "user_Id")
 public class User {
 
    @Id
@@ -41,6 +41,8 @@ public class User {
    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
    @JoinColumn(name = "person_id", unique = true)
    private Person userData;
+
+
 
    public User() { }
 

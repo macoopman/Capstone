@@ -17,7 +17,6 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +26,14 @@ import java.util.Optional;
 @Slf4j
 public class UserService {
 
-   public static final String DUMMY_STRING = "dummy";
-   public static final String DUMMY_EMAIL = "dummy@dum.com";
-   public static final int DUMMY_DOUBLE = 2;
+   private static final String DUMMY_STRING = "dummy";
+   private static final String DUMMY_EMAIL = "dummy@dum.com";
+   private static final int DUMMY_DOUBLE = 2;
    private static final Long TEMP_ID = 999999L;
+   private static final String ROLE_USER = "ROLE_USER";
+   private static final String ROLE_ADMIN = "ROLE_ADMIN";
+   public static final int RECOVERY_PASSWORD_LENGTH = 10;
+
    private UserRepository userRepository;
    private ProfessorRepository professorRepository;
    private StudentRepository studentRepository;
@@ -68,50 +71,18 @@ public class UserService {
    }
 
    public UserDto signin(String username, String password){
-
       Optional<User> user = userRepository.findByUsername(username);
-
-      // Check if Username and Password were given
       if(null == username || null == password) throw new MissingFieldsException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
-
-      // Check if User Exists
       if(!user.isPresent()) throw new FailedLoginException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
-
-
-      // Authenticate User
       authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password ));
-
-      // create a new token for the user
       Optional<String> token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
-
-
-
-      // Build Custom Return Data
-
-      UserDto userDto = new UserDto();
-      userDto.setUsername(user.get().getUsername());
-      userDto.setUserId(user.get().getId());
-      userDto.setJwtToken(token.get());
-      String userType = user.get().getUserData().toString();
-      userType = userType.substring(0, userType.indexOf("(")).toLowerCase();
-      userDto.setUserType(userType + "s");
-
-
-      if(null == user.get().getUserData().getCurrentSession()) {
-         userDto.setCurrentDepartmentId(null);
-         userDto.setCurrentSessionNumberId(null);
-         userDto.setCurrentClassNumberId(null);
-      }
-
-
-
-      return userDto;
+      return buildUserDto(user, token);
    }
 
 
    public Optional<User> addStudent(String firstName, String lastName, String password, String email, String gpa, String major) {
       validateEmail(email);
-      Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
+      Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
       List<LearningStyleAnswers> learningStyleAnswers = new LinkedList<>();
       User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
          new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING, learningStyleAnswers
@@ -139,7 +110,7 @@ public class UserService {
 
    public Optional<User> addProfessor(String firstName, String lastName, String password, String email, String rating) {
       validateEmail(email);
-      Optional<Role> role = roleRepository.findByRoleName("ROLE_USER");
+      Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
 
       User user = userRepository.save( new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Professor(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE)));
 
@@ -156,7 +127,7 @@ public class UserService {
 
 
    public Optional<User> addAdmin(String firstName, String lastName, String password, String email) {
-      Optional<Role> role = roleRepository.findByRoleName("ROLE_ADMIN");
+      Optional<Role> role = roleRepository.findByRoleName(ROLE_ADMIN);
       User user = userRepository.save(new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Admin(TEMP_ID,DUMMY_STRING, DUMMY_STRING,DUMMY_EMAIL)));
       user.setUserData(new Admin(user.getId(),firstName, lastName, email));
       user.setUsername(buildUniqueUserName(user));
@@ -190,7 +161,7 @@ public class UserService {
    public RecoverReturnDto recover(String username, String email) throws Exception{
 
       User recoverUser = getRecoverUser(username, email);
-      String tempPassword = RandomStringUtils.random(10, true, true);
+      String tempPassword = RandomStringUtils.random(RECOVERY_PASSWORD_LENGTH, true, true);
       String hashedPassword = passwordEncoder.encode(tempPassword);
       recoverUser.setPassword(hashedPassword);
       userRepository.save(recoverUser);
@@ -218,13 +189,16 @@ public class UserService {
       Optional<Student> student = studentRepository.findById(userId);
 
       List<LearningStyleAnswers> answersList = student.get().getLearningStyleAnswersList();
-
+      boolean isFound = false;
       for(LearningStyleAnswers answer : answersList){
+
          if(answer.getId() == learningStyleId){
             answer.setAnswers(Long.parseLong(updatedValue));
             learningStyleAnswerRepository.save(answer);
+            isFound = true;
          }
       }
+      if(!isFound) throw new UserServiceException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
 
 
    }
@@ -235,6 +209,24 @@ public class UserService {
 
 
    // helper methods
+
+   private UserDto buildUserDto(Optional<User> user, Optional<String> token) {
+      UserDto userDto = new UserDto();
+      userDto.setUsername(user.get().getUsername());
+      userDto.setUserId(user.get().getId());
+      userDto.setJwtToken(token.get());
+      String userType = user.get().getUserData().toString();
+      userType = userType.substring(0, userType.indexOf("(")).toLowerCase();
+      userDto.setUserType(userType + "s");
+
+
+      if(null == user.get().getUserData().getCurrentSession()) {
+         userDto.setCurrentDepartmentId(null);
+         userDto.setCurrentSessionNumberId(null);
+         userDto.setCurrentClassNumberId(null);
+      }
+      return userDto;
+   }
 
    private boolean isTempMatch(String tempPass, User user){
       return BCrypt.checkpw(tempPass, user.getPassword());

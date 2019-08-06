@@ -216,6 +216,6 @@ POST .../comments     -- admin only
 * Response Success = 204
 * Response Fail = 500 <-- this will change for now just check that it was 200
 ```java
-   http://localhost:8080/professors(or students)/{id}
+   http:user_id
 
 ```

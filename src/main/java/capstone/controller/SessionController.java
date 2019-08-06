@@ -1,9 +1,9 @@
 package capstone.controller;
 
+import capstone.dto.AddStudentProfessorDto;
 import capstone.dto.QuestionResponseDto;
 import capstone.dto.ResultsDTO;
 import capstone.services.SessionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -13,8 +13,12 @@ import java.util.List;
 @RequestMapping("/sessions")
 public class SessionController {
 
-   @Autowired
+
    private SessionService sessionService;
+
+   public SessionController(SessionService sessionService) {
+      this.sessionService = sessionService;
+   }
 
    @PostMapping("/{session_id}/updateQuestion/{questionAnswer_id}")
    public void updateQuestion(@PathVariable("session_id") Long session_id,
@@ -27,5 +31,15 @@ public class SessionController {
    public List<ResultsDTO> results(@PathVariable("session_id") long session_id){
       List<ResultsDTO> results = sessionService.results(session_id);
       return results;
+   }
+
+   @PostMapping("/{session_id}/addStudent")
+   public void addStudent(@PathVariable("session_id") long id, @RequestBody @Valid AddStudentProfessorDto dto){
+         sessionService.addStudent(id, dto);
+   }
+
+   @PostMapping("/{session_id}/addProfessor")
+   public void addProfessor(@PathVariable("session_id") long user_Id, @RequestBody @Valid AddStudentProfessorDto dto){
+      sessionService.addProfessor(user_Id, dto);
    }
 }

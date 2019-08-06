@@ -1,16 +1,64 @@
-version: '3'
+version: '3.3'
 services:
-  sql-docker-container:
-    image: mysql/mysql-server:latest
-    container_name: capstone_mysql
+  whiteboard_mysql_compose:
+    image: mysql/mysql-server
     environment:
-      - MYSQL_DATABASE=capstone
+      - MYSQL_DATABASE=whiteboard
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_USER=user
       - MYSQL_PASSWORD=password
-    ports:
-      - 6604:3306
-
-#    volumes:
-#      - /data/mysql
+    networks:
+      - whiteboard_network
+    volumes:
+      - dbdata:/var/lib/mysql
     restart: always
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      replicas: 1
+      update_config:
+        parallelism: 2
+        delay: 10s
+      restart_policy:
+        condition: on-failure
+
+
+
+  whiteboard_app:
+      build:
+        context: .
+      image: macoopman/whiteboard:auto
+      ports:
+        - "8082:8080"
+      networks:
+        - whiteboard_network
+      restart: always
+      depends_on:
+        - whiteboard_mysql_compose
+      deploy:
+        replicas: 1
+        update_config:
+          parallelism: 2
+          delay: 10s
+        restart_policy:
+          condition: on-failure
+
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - whiteboard_network
+
+networks:
+  whiteboard_network:
+
+volumes:
+  dbdata:
+
+
