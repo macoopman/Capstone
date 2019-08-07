@@ -1,5 +1,6 @@
 package capstone.controller;
 
+import capstone.dto.AddCommentDto;
 import capstone.dto.AddStudentProfessorDto;
 import capstone.dto.QuestionResponseDto;
 import capstone.dto.ResultsDTO;
@@ -42,4 +43,11 @@ public class SessionController {
    public void addProfessor(@PathVariable("session_id") long user_Id, @RequestBody @Valid AddStudentProfessorDto dto){
       sessionService.addProfessor(user_Id, dto);
    }
+
+
+   @PostMapping("/{session_id}/addComment")
+   private void addComment(@PathVariable("session_id") long session_id, @RequestBody @Valid AddCommentDto dto){
+      sessionService.addComment(session_id, dto);
+   }
+
 }

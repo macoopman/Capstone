@@ -34,9 +34,12 @@ public class Session {
    private List<Professor> professors;
 
 
-   // NOT Implemented Yet
-   @ManyToMany(targetEntity = Comment.class)
+
+   @OneToMany(mappedBy = "session")
    private List<Comment> comments;
+
+
+
 
    @ElementCollection(targetClass=ELOAnswer.class)
    private List<ELOAnswer> questionAndAnswers;

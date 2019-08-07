@@ -1,15 +1,10 @@
 package capstone.services;
 
-import capstone.domain.ELOAnswer;
-import capstone.domain.Professor;
-import capstone.domain.Session;
-import capstone.domain.Student;
+import capstone.domain.*;
+import capstone.dto.AddCommentDto;
 import capstone.dto.AddStudentProfessorDto;
 import capstone.dto.ResultsDTO;
-import capstone.repositories.ELOAnswerRepository;
-import capstone.repositories.ProfessorRepository;
-import capstone.repositories.SessionRepository;
-import capstone.repositories.StudentRepository;
+import capstone.repositories.*;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedList;
@@ -23,12 +18,18 @@ public class SessionService {
    private StudentRepository studentRepository;
    private ProfessorRepository professorRepository;
    private ELOAnswerRepository eloAnswerRepository;
+   private UserRepository userRepository;
+   private CommentRepository commentRepository;
 
-   public SessionService(SessionRepository sessionRepository, StudentRepository studentRepository, ProfessorRepository professorRepository, ELOAnswerRepository eloAnswerRepository) {
+   public SessionService(SessionRepository sessionRepository, StudentRepository studentRepository,
+                         ProfessorRepository professorRepository, ELOAnswerRepository eloAnswerRepository,
+                         UserRepository userRepository, CommentRepository commentRepository) {
       this.sessionRepository = sessionRepository;
       this.studentRepository = studentRepository;
       this.professorRepository = professorRepository;
       this.eloAnswerRepository = eloAnswerRepository;
+      this.userRepository = userRepository;
+      this.commentRepository = commentRepository;
    }
 
    /**
@@ -88,6 +89,22 @@ public class SessionService {
 
       professor.get().setCurrentSession(session.get());
       professorRepository.save(professor.get());
+   }
+
+
+   public void addComment(long session_id, AddCommentDto dto) {
+      Optional<User> user = userRepository.findById(Long.parseLong(dto.getUserId()));
+      Optional<Session> session = sessionRepository.findById(session_id);
+
+
+      Comment comment = new Comment();
+      comment.setMessage(dto.getMessage());
+      comment.setUser(user.get());
+      comment.setSession(session.get());
+      comment.setParentComment(null);
+
+      commentRepository.save(comment);
+
    }
 
 
