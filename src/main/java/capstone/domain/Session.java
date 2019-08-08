@@ -1,5 +1,8 @@
 package capstone.domain;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -9,6 +12,8 @@ import java.util.*;
 
 @Entity
 @Data
+//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
+//@JsonIdentityReference(alwaysAsId=true)
 public class Session {
 
 

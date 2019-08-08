@@ -17,7 +17,7 @@ public class CommentController {
    }
 
    @PostMapping("/{comment_id}/addReply")
-   public void addReply(@PathVariable("comment_id") long id, @RequestBody @Valid AddCommentDto dto){
-      commentService.addReply(id, dto);
+   public void addReply(@PathVariable("comment_id") long comment_id, @RequestBody @Valid AddCommentDto dto){
+      commentService.addReply(comment_id, dto);
    }
 }

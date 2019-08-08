@@ -1,9 +1,7 @@
 package capstone.controller;
 
-import capstone.dto.AddCommentDto;
-import capstone.dto.AddStudentProfessorDto;
-import capstone.dto.QuestionResponseDto;
-import capstone.dto.ResultsDTO;
+import capstone.domain.Comment;
+import capstone.dto.*;
 import capstone.services.SessionService;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,5 +47,7 @@ public class SessionController {
    private void addComment(@PathVariable("session_id") long session_id, @RequestBody @Valid AddCommentDto dto){
       sessionService.addComment(session_id, dto);
    }
+
+
 
 }

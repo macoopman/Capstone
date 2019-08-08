@@ -3,10 +3,13 @@ package capstone.services;
 import capstone.domain.*;
 import capstone.dto.AddCommentDto;
 import capstone.dto.AddStudentProfessorDto;
+import capstone.dto.CommentReturnDto;
 import capstone.dto.ResultsDTO;
 import capstone.repositories.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -103,8 +106,10 @@ public class SessionService {
       comment.setSession(session.get());
       comment.setParentComment(null);
 
-      commentRepository.save(comment);
 
+      commentRepository.save(comment);
+      comment.setParentId((int) comment.getId());
+      commentRepository.save(comment);
    }
 
 

@@ -22,14 +22,19 @@ public class CommentService {
       this.userRepository = userRepository;
    }
 
-   public void addReply(long id, AddCommentDto dto) {
-      Optional<Comment> parentComment = commentRepository.findById(id);
+   public void addReply(long comment_id, AddCommentDto dto) {
+      Optional<Comment> parentComment = commentRepository.findById(comment_id);
       Optional<User> user = userRepository.findById(Long.parseLong(dto.getUserId()));
+
       Comment reply = new Comment();
       reply.setParentComment(parentComment.get());
       reply.setSession(parentComment.get().getSession());
       reply.setUser(user.get());
       reply.setMessage(dto.getMessage());
+      reply.setParentId((int) parentComment.get().getId());
+      parentComment.get().incrementRelies();
+
+
       commentRepository.save(reply);
 
    }

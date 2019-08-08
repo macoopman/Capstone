@@ -51,7 +51,4 @@ public class UserController {
       userService.reset(dto.getUserId(), dto.getTempPassword(), dto.getNewPassword());
    }
 
-
-
-
 }
