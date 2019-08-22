@@ -10,6 +10,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,5 +39,14 @@ public class Student extends Person {
 
    public void setLearningStyleAnswersList(List<LearningStyleAnswers> learningStyleAnswersList) {
       this.learningStyleAnswersList = learningStyleAnswersList;
+   }
+
+   public List<LearningStyleAnswers> getLearningStyleAnswersList() {
+
+      List<LearningStyleAnswers> resultsList = new ArrayList<>();
+      for (LearningStyleAnswers answer : learningStyleAnswersList){
+         resultsList.add(answer);
+      }
+      return resultsList;
    }
 }

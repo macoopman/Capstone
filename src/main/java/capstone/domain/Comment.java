@@ -1,35 +1,23 @@
 package capstone.domain;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import lombok.Data;
-
 import javax.persistence.*;
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
 @Data
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-//@JsonIdentityReference(alwaysAsId=true)
 public class Comment {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private long Id;
-
    private Date dateCreated;
-
+   private String userName;
    private String message;
-
-
    private Integer parentId;
-
    private Integer numOfRelies;
+   private String isAnonymous;
 
    @OneToOne
    private User user;
@@ -53,6 +41,7 @@ public class Comment {
       this.session = session;
       this.parentComment = parentComment;
       this.numOfRelies = 0;
+      this.isAnonymous = "0";
    }
 
    @PrePersist
@@ -64,7 +53,7 @@ public class Comment {
       return Id;
    }
 
-   public void incrementRelies(){
+   public void incrementReplies(){
       this.numOfRelies++;
    }
 }

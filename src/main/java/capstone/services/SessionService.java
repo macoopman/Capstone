@@ -1,12 +1,10 @@
 package capstone.services;
 
 import capstone.domain.*;
-import capstone.dto.AddCommentDto;
-import capstone.dto.AddStudentProfessorDto;
-import capstone.dto.CommentReturnDto;
-import capstone.dto.ResultsDTO;
+import capstone.dto.*;
+import capstone.exceptions.SessionServiceException;
 import capstone.repositories.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -17,22 +15,27 @@ import java.util.Optional;
 @Service
 public class SessionService {
 
+   public static final String ZERO = "0";
+
    private SessionRepository sessionRepository;
    private StudentRepository studentRepository;
    private ProfessorRepository professorRepository;
    private ELOAnswerRepository eloAnswerRepository;
    private UserRepository userRepository;
    private CommentRepository commentRepository;
+   private LearningStyleQuestionRepository learningStyleQuestionRepository;
 
    public SessionService(SessionRepository sessionRepository, StudentRepository studentRepository,
                          ProfessorRepository professorRepository, ELOAnswerRepository eloAnswerRepository,
-                         UserRepository userRepository, CommentRepository commentRepository) {
+                         UserRepository userRepository, CommentRepository commentRepository,
+                         LearningStyleQuestionRepository learningStyleQuestionRepository) {
       this.sessionRepository = sessionRepository;
       this.studentRepository = studentRepository;
       this.professorRepository = professorRepository;
       this.eloAnswerRepository = eloAnswerRepository;
       this.userRepository = userRepository;
       this.commentRepository = commentRepository;
+      this.learningStyleQuestionRepository = learningStyleQuestionRepository;
    }
 
    /**
@@ -42,19 +45,18 @@ public class SessionService {
     * @param question_id Id of question
     * @param response   Students response
     */
-   public void updateQuestion(Long session_id, Long question_id, String response) {
-      Optional<Session> session = sessionRepository.findById(session_id);
-      Optional<ELOAnswer> question = eloAnswerRepository.findById(question_id);
+   public void updateQuestionResponse(Long session_id, Long question_id, String response){
+      Session session = sessionRepository.findById(session_id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
+      ELOAnswer answerItem = eloAnswerRepository.findById(question_id).orElseThrow( () -> new SessionServiceException("Question Id Not Found") );
 
-      if( !session.get().getQuestionAndAnswers().contains(question)){
-         // TODO: 8/2/19 add some exceptions
+      if( !session.getQuestionAndAnswers().contains(answerItem)){
          System.out.println("------------- Does not Contain");
       }
 
-      question.get().setAnswers(question.get().getAnswers() + Long.parseLong(response));
-      question.get().setNumOfResponses( question.get().getNumOfResponses() + 1);
+      answerItem.setAnswers(answerItem.getAnswers() + Long.parseLong(response));
+      answerItem.setNumOfResponses( answerItem.getNumOfResponses() + 1);
 
-      eloAnswerRepository.save(question.get());
+      eloAnswerRepository.save(answerItem);
    }
 
 
@@ -64,9 +66,29 @@ public class SessionService {
     * @param session_id
     * @return JSON list of results
     */
-   public List<ResultsDTO> results(long session_id){
-      Optional<Session> question = sessionRepository.findById(session_id);
-      return getResultsDTOS(question);
+   public List<ResultsDto> results(long session_id){
+      Session session = sessionRepository.findById(session_id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
+      return getResultsDTOS(session);
+   }
+
+   private List<ResultsDto> getResultsDTOS(Session question) {
+      List<ResultsDto> results = new LinkedList<>();
+
+      for( ELOAnswer answer : question.getQuestionAndAnswers()){
+         ResultsDto result = new ResultsDto();
+         result.setId(String.valueOf(answer.getId()));
+         result.setQuestion(answer.getQuestion().getMessage());
+         if(!(0 == answer.getNumOfResponses())){
+            result.setAverage(String.valueOf( answer.getAnswers() / answer.getNumOfResponses() ));
+         }
+         else {
+            result.setAverage(ZERO);
+         }
+
+         result.setTotalResponses(String.valueOf(answer.getNumOfResponses()));
+         results.add(result);
+      }
+      return results;
    }
 
 
@@ -77,64 +99,78 @@ public class SessionService {
     * @param dto Student Add Data Transfer Object
     */
    public void addStudent(long id, AddStudentProfessorDto dto) {
-      Optional<Session> session = sessionRepository.findById(id);
-
-      Optional<Student> student = studentRepository.findById(Long.parseLong(dto.getUser_Id()));
-
-      student.get().setCurrentSession(session.get());
-      studentRepository.save(student.get());
+      Session session = sessionRepository.findById(id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
+      Student student = studentRepository.findById(Long.parseLong(dto.getUser_Id())).orElseThrow( () -> new SessionServiceException("Student Id Not Found") );
+      student.setCurrentSession(session);
+      studentRepository.save(student);
    }
 
 
    public void addProfessor(long id, AddStudentProfessorDto dto) {
-      Optional<Session> session = sessionRepository.findById(id);
-      Optional<Professor> professor = professorRepository.findById(Long.parseLong(dto.getUser_Id()));
-
-      professor.get().setCurrentSession(session.get());
-      professorRepository.save(professor.get());
+      Session session = sessionRepository.findById(id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
+      Professor professor = professorRepository.findById(Long.parseLong(dto.getUser_Id())).orElseThrow( () -> new SessionServiceException("Professor Id Not Found") );
+      professor.setCurrentSession(session);
+      professorRepository.save(professor);
    }
 
 
    public void addComment(long session_id, AddCommentDto dto) {
-      Optional<User> user = userRepository.findById(Long.parseLong(dto.getUserId()));
-      Optional<Session> session = sessionRepository.findById(session_id);
+      User user = userRepository.findById(Long.parseLong(dto.getUserId())).orElseThrow( () -> new SessionServiceException("User Id Not Found") );
+      Session session = sessionRepository.findById(session_id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
+      buildAndSaveComment(dto, user, session);
+   }
 
-
+   private void buildAndSaveComment(AddCommentDto dto, User user, Session session) {
+      User currentUser = userRepository.findById(Long.parseLong(dto.getUserId())).orElseThrow(() -> new SessionServiceException("User id not found"));
       Comment comment = new Comment();
       comment.setMessage(dto.getMessage());
-      comment.setUser(user.get());
-      comment.setSession(session.get());
+      comment.setUser(user);
+      comment.setSession(session);
       comment.setParentComment(null);
-
-
+      comment.setIsAnonymous(dto.getIsAnonymous());
+      comment.setUserName(currentUser.getUsername());
       commentRepository.save(comment);
       comment.setParentId((int) comment.getId());
       commentRepository.save(comment);
    }
 
 
+   public List<LearningStyleResultsDto> learningStyleResults(long session_id) {
+      Session session = sessionRepository.findById(session_id).orElseThrow(() -> new SessionServiceException("Session Id Not Found"));
+      Iterable<LearningStyleQuestion> questions = learningStyleQuestionRepository.findAll();
+      List<Student> students = session.getStudents();
 
-   // Helper Methods
 
-   private List<ResultsDTO> getResultsDTOS(Optional<Session> question) {
-      List<ResultsDTO> results = new LinkedList<>();
-      for( ELOAnswer answer : question.get().getQuestionAndAnswers()){
-         ResultsDTO result = new ResultsDTO();
-         result.setId(String.valueOf(answer.getId()));
-         result.setQuestion(answer.getQuestion().getMessage());
-         if(!(0 == answer.getNumOfResponses())){
-            result.setAverage(String.valueOf( answer.getAnswers() / answer.getNumOfResponses() ));
-         }
-         else {
-            result.setAverage("0");
-         }
+      List<LearningStyleResultsDto> results = new ArrayList<>();
 
-         result.setTotalResponses(String.valueOf(answer.getNumOfResponses()));
-         results.add(result);
+      // initialize results list
+      for(LearningStyleQuestion question : questions){
+         LearningStyleResultsDto dto = new LearningStyleResultsDto();
+         dto.setAverage(0);
+         dto.setQuestion(question.getQuestion());
+         dto.setQuestionId(question.getId());
+         results.add(dto);
       }
+
+      for(Student student : students){
+         List<LearningStyleAnswers> answersList = student.getLearningStyleAnswersList();
+         for (LearningStyleAnswers answer : answersList){
+            for (LearningStyleResultsDto result : results){
+               if (result.getQuestionId() == answer.getQuestion().getId()){
+                  int total = result.getTotal() + (int)answer.getAnswers();
+                  int responses = result.getResponces() + 1;
+                  double average = total /responses;
+
+                  result.setTotal(total);
+                  result.setResponces(responses);
+                  result.setAverage(average);
+               }
+            }
+         }
+
+      }
+
+
       return results;
    }
-
-
-
 }

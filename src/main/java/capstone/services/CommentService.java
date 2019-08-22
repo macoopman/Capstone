@@ -4,11 +4,10 @@ import capstone.domain.Comment;
 import capstone.domain.Session;
 import capstone.domain.User;
 import capstone.dto.AddCommentDto;
+import capstone.exceptions.CommentServiceException;
 import capstone.repositories.CommentRepository;
 import capstone.repositories.UserRepository;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -23,30 +22,22 @@ public class CommentService {
    }
 
    public void addReply(long comment_id, AddCommentDto dto) {
-      Optional<Comment> parentComment = commentRepository.findById(comment_id);
-      Optional<User> user = userRepository.findById(Long.parseLong(dto.getUserId()));
-
-      Comment reply = new Comment();
-      reply.setParentComment(parentComment.get());
-      reply.setSession(parentComment.get().getSession());
-      reply.setUser(user.get());
-      reply.setMessage(dto.getMessage());
-      reply.setParentId((int) parentComment.get().getId());
-      parentComment.get().incrementRelies();
-
-
+      Comment parentComment = commentRepository.findById(comment_id).orElseThrow(() -> new CommentServiceException("Parent Comment Not Found"));
+      User user = userRepository.findById(Long.parseLong(dto.getUserId())).orElseThrow(() -> new CommentServiceException("User Not Found"));
+      Comment reply = createComment(dto, parentComment, user);
       commentRepository.save(reply);
-
    }
 
-
-   private Session findRootSession(Comment comment){
-      if (null != comment.getSession()){
-         return comment.getSession();
-      }
-      else {
-         findRootSession(comment.getParentComment());
-      }
-      return null;
+   private Comment createComment(AddCommentDto dto, Comment parentComment, User user) {
+      Comment reply = new Comment();
+      reply.setParentComment(parentComment);
+      reply.setSession(parentComment.getSession());
+      reply.setUser(user);
+      reply.setMessage(dto.getMessage());
+      reply.setParentId((int) parentComment.getId());
+      reply.setIsAnonymous(dto.getIsAnonymous());
+      parentComment.incrementReplies();
+      return reply;
    }
+
 }

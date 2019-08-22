@@ -12,55 +12,39 @@ import java.util.*;
 
 @Entity
 @Data
-//@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
-//@JsonIdentityReference(alwaysAsId=true)
 public class Session {
-
-
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
-   private long id;
+   private long Id;
    private String sessionName;
    private LocalDate startDate;
    private LocalDate endDate;
-
 
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    @JoinColumn(name="class_id")
    private Klass klass;
 
-
    @OneToMany(mappedBy = "currentSession")
    private List<Student> students;
-
 
    @OneToMany(mappedBy = "currentSession")
    private List<Professor> professors;
 
-
-
    @OneToMany(mappedBy = "session")
    private List<Comment> comments;
 
-
-
-
    @ElementCollection(targetClass=ELOAnswer.class)
    private List<ELOAnswer> questionAndAnswers;
-
-
-
-
-
 
    @PostPersist
    void postPersist(){
       buildDate();
    }
 
-
-
+   public long getId() {
+      return Id;
+   }
 
    private void buildDate() {
       String month = cleanMonth(startDate.getMonth());

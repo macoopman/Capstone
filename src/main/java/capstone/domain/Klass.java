@@ -42,6 +42,7 @@ public class Klass {
    private List<ELOQuestion> questions;
 
    public void appendSession(Session session){
+
       sessions.add(session);
    }
 

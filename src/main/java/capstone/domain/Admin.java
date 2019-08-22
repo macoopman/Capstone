@@ -16,6 +16,7 @@ public class Admin extends Person {
    public Admin() { }
 
    public Admin(Long id, String firstName, String lastName, String email) {
+
       super(id, firstName, lastName, email);
    }
 }

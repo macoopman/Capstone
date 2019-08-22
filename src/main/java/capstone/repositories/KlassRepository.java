@@ -12,4 +12,5 @@ import java.util.Optional;
 
 @Repository
 public interface KlassRepository extends CrudRepository<Klass, Long> {
+
 }

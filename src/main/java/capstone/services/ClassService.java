@@ -4,8 +4,7 @@ import capstone.domain.ELOAnswer;
 import capstone.domain.ELOQuestion;
 import capstone.domain.Klass;
 import capstone.domain.Session;
-import capstone.error_message.ErrorMessages;
-import capstone.exceptions.InvalidIdException;
+import capstone.exceptions.ClassServiceException;
 import capstone.repositories.ELOAnswerRepository;
 import capstone.repositories.ELOQuestionRepository;
 import capstone.repositories.KlassRepository;
@@ -33,37 +32,35 @@ public class ClassService {
    }
 
    public void addQuestion(Long classId, String weekNumber, String message){
-      Optional<Klass> klass = klassRepository.findById(classId);
-      if(!klass.isPresent()) throw new InvalidIdException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
-      eloQuestionRepository.save(new ELOQuestion(klass.get(), Integer.parseInt(weekNumber), message));
+      Klass klass = klassRepository.findById(classId).orElseThrow(() -> new ClassServiceException("Class Not Found"));
+      eloQuestionRepository.save(new ELOQuestion(klass, Integer.parseInt(weekNumber), message));
    }
 
-   public void addSession(Long id, LocalDate startDate, LocalDate endDate) {
-      Optional<Klass> klass = klassRepository.findById(id);
-      if(!klass.isPresent()) throw new InvalidIdException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+   public void addSession(Long classId, LocalDate startDate, LocalDate endDate) {
+      Klass klass = klassRepository.findById(classId).orElseThrow(() -> new ClassServiceException("Class Not Found"));
       Session session = createSession(startDate, endDate, klass);
-      klass.get().appendSession(session);
-      klassRepository.save(klass.get());
+      klass.appendSession(session);
+      klassRepository.save(klass);
       sessionRepository.save(session);
 
    }
 
 
    // Helper Methods
-   private Session createSession(LocalDate startDate, LocalDate endDate, Optional<Klass> klass) {
+   private Session createSession(LocalDate startDate, LocalDate endDate, Klass klass) {
       Session session = new Session();
       session.setStartDate(startDate);
       session.setEndDate(endDate);
 
       updateList(klass, session);
-      session.setKlass(klass.get());
-      session.setKlass(klass.get());
+      session.setKlass(klass);
+      session.setKlass(klass);
       return session;
    }
 
-   private void updateList(Optional<Klass> klass, Session session) {
+   private void updateList(Klass klass, Session session) {
       List<ELOAnswer> answers = new LinkedList<>();
-      for (ELOQuestion question : klass.get().getQuestions()){
+      for (ELOQuestion question : klass.getQuestions()){
          ELOAnswer answer = new ELOAnswer(question, 0,0);
          answers.add(answer);
          eloAnswerRepository.save(answer);

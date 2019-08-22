@@ -4,7 +4,6 @@ import capstone.domain.*;
 import capstone.dto.RecoverReturnDto;
 import capstone.dto.UserDto;
 import capstone.email.EmailService;
-import capstone.error_message.ErrorMessages;
 import capstone.exceptions.*;
 import capstone.repositories.*;
 import capstone.jwt.JwtProvider;
@@ -72,18 +71,32 @@ public class UserService {
 
    public UserDto signin(String username, String password){
       Optional<User> user = userRepository.findByUsername(username);
-      if(null == username || null == password) throw new MissingFieldsException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
-      if(!user.isPresent()) throw new FailedLoginException(ErrorMessages.AUTHENTICATION_FAILED.getErrorMessage());
-      authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password ));
+
+      if(null == username || null == password) throw new UserServiceException("Missing Field");
+
+      if(!user.isPresent()) throw new UserServiceException("Invalid Username");
+
+      try{
+         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password ));
+      }
+      catch (Exception e){
+         throw new UserServiceException("Invalid Password");
+      }
+
       Optional<String> token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
+
       return buildUserDto(user, token);
    }
 
 
    public Optional<User> addStudent(String firstName, String lastName, String password, String email, String gpa, String major) {
+
       validateEmail(email);
+
       Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
+
       List<LearningStyleAnswers> learningStyleAnswers = new LinkedList<>();
+
       User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
          new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING, learningStyleAnswers
          )));
@@ -101,10 +114,14 @@ public class UserService {
       user.setUserData(student);
       user.setUsername(buildUniqueUserName(user));
 
-      Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
-      studentRepository.delete(deleteMe.get());
+      cleanUpStudentRepo();
 
       return userRepository.findByUsername(user.getUsername());
+   }
+
+   private void cleanUpStudentRepo() {
+      Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
+      studentRepository.delete(deleteMe.get());
    }
 
 
@@ -117,13 +134,15 @@ public class UserService {
       user.setUserData( new Professor(user.getId(),firstName, lastName, email, Double.parseDouble(rating)));
       user.setUsername(buildUniqueUserName(user));
 
-      Optional<Professor> deleteMe = professorRepository.findById(TEMP_ID);
-      professorRepository.delete(deleteMe.get());
+      cleanUpProfessorRepo();
 
       return userRepository.findByUsername(user.getUsername());
    }
 
-
+   private void cleanUpProfessorRepo() {
+      Optional<Professor> deleteMe = professorRepository.findById(TEMP_ID);
+      professorRepository.delete(deleteMe.get());
+   }
 
 
    public Optional<User> addAdmin(String firstName, String lastName, String password, String email) {
@@ -131,15 +150,15 @@ public class UserService {
       User user = userRepository.save(new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Admin(TEMP_ID,DUMMY_STRING, DUMMY_STRING,DUMMY_EMAIL)));
       user.setUserData(new Admin(user.getId(),firstName, lastName, email));
       user.setUsername(buildUniqueUserName(user));
-
-
-      Optional<Admin> deleteMe = adminRepository.findById(TEMP_ID);
-      adminRepository.delete(deleteMe.get());
+      cleanUpAdminRepo();
 
       return userRepository.findByUsername(user.getUsername());
    }
 
-
+   private void cleanUpAdminRepo() {
+      Optional<Admin> deleteMe = adminRepository.findById(TEMP_ID);
+      adminRepository.delete(deleteMe.get());
+   }
 
 
    private String buildUniqueUserName(User user) {
@@ -150,17 +169,10 @@ public class UserService {
       return username.toString();
    }
 
-   /**
-    * Recover password and update database
-    * only username OR email are required
-    *
-    * @param username username of user
-    * @param email email of users
-    * @throws Exception
-    */
-   public RecoverReturnDto recover(String username, String email) throws Exception{
 
-      User recoverUser = getRecoverUser(username, email);
+   public RecoverReturnDto recoverPassword(String username, String email) throws Exception{
+
+      User recoverUser = getUserForRecovery(username, email);
       String tempPassword = RandomStringUtils.random(RECOVERY_PASSWORD_LENGTH, true, true);
       String hashedPassword = passwordEncoder.encode(tempPassword);
       recoverUser.setPassword(hashedPassword);
@@ -170,35 +182,56 @@ public class UserService {
       return new RecoverReturnDto(recoverUser.getId());
    }
 
+   private User getUserForRecovery(String username, String email) {
+      Optional<User> user = userRepository.findByUsername(username);
+      Optional<Student> student = studentRepository.findStudentByEmail(email);
+      Optional<Professor> professor = professorRepository.findProfessorByEmail(email);
+      User recoverUser = null;
 
-   /**
-    * Provided a valid temp password and a new password reset password in database
-    *
-    * @param tempPass
-    * @param newPass
-    */
-   public void reset(long userId, String tempPass, String newPass){
+      if(null != username){
+         if(!user.isPresent()) throw new UserServiceException("Invalid Username");
+         recoverUser = user.get();
+      }
+
+      if(null != email){
+         if (!student.isPresent() && !professor.isPresent()) throw new UserServiceException("Invalid Email Address");
+
+         if(student.isPresent()){
+            recoverUser = student.get().getUser();
+         }
+         else{
+            recoverUser = professor.get().getUser();
+         }
+      }
+      return recoverUser;
+   }
+
+
+   public void resetPassword(long userId, String tempPass, String newPass){
       Optional<User> user = userRepository.findById(userId);
-      if(!user.isPresent()) throw new InvalidIdException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
-      if(!isTempMatch(tempPass, user.get())) throw new InvalidTempPassException(ErrorMessages.INVALID_TEMP_PASS.getErrorMessage());
+      if(!user.isPresent()) throw new UserServiceException("Invalid User Id");
+      if(!isTempMatch(tempPass, user.get())) throw new UserServiceException("Invalid Temporary Password");
       user.get().setPassword(passwordEncoder.encode(newPass));
       userRepository.save(user.get());
    }
 
-   public void updateLearningStyle(long userId, long learningStyleId, String updatedValue) {
+   public void updateLearningStyle(long userId, long questionId, String updatedValue) {
       Optional<Student> student = studentRepository.findById(userId);
+      if(!student.isPresent()) throw new UserServiceException("User Id Not Found");
 
       List<LearningStyleAnswers> answersList = student.get().getLearningStyleAnswersList();
+
+
       boolean isFound = false;
       for(LearningStyleAnswers answer : answersList){
 
-         if(answer.getId() == learningStyleId){
+         if(answer.getQId() == questionId){
             answer.setAnswers(Long.parseLong(updatedValue));
             learningStyleAnswerRepository.save(answer);
             isFound = true;
          }
       }
-      if(!isFound) throw new UserServiceException(ErrorMessages.NO_RECORED_FOUND.getErrorMessage());
+      if(!isFound) throw new UserServiceException("Invalid Learning Style Id");
 
 
    }
@@ -232,36 +265,14 @@ public class UserService {
       return BCrypt.checkpw(tempPass, user.getPassword());
    }
 
-   private User getRecoverUser(String username, String email) {
-      Optional<User> user = userRepository.findByUsername(username);
-      Optional<Student> student = studentRepository.findStudentByEmail(email);
-      Optional<Professor> professor = professorRepository.findProfessorByEmail(email);
-      User recoverUser = null;
 
-      if(null != username){
-         if(!user.isPresent()) throw new InvalidRecoverException(ErrorMessages.RECOVERY_FAILED.getErrorMessage());
-         recoverUser = user.get();
-      }
-
-      if(null != email){
-         if (!student.isPresent() && !professor.isPresent()) throw new InvalidRecoverException(ErrorMessages.RECOVERY_FAILED.getErrorMessage());
-
-         if(student.isPresent()){
-            recoverUser = student.get().getUser();
-         }
-         else{
-            recoverUser = professor.get().getUser();
-         }
-      }
-      return recoverUser;
-   }
 
 
 
 
 
    private void validateEmail(String email) {
-      if(studentRepository.findStudentByEmail(email).isPresent()) throw new UserServiceException(ErrorMessages.RECORED_ALREADY_EXISTS.getErrorMessage());
+      if(studentRepository.findStudentByEmail(email).isPresent()) throw new UserServiceException("Email Address Already Exists");
    }
 
 

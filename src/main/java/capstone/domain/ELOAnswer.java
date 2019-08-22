@@ -11,12 +11,12 @@ public class ELOAnswer {
    @GeneratedValue(strategy = GenerationType.AUTO)
    private long Id;
 
-   @OneToOne(targetEntity = ELOQuestion.class)
-   private ELOQuestion question;
-
    private long answers;
 
    private long numOfResponses;
+
+   @OneToOne(targetEntity = ELOQuestion.class)
+   private ELOQuestion question;
 
 
    public ELOAnswer() {

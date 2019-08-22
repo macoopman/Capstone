@@ -1,6 +1,5 @@
 package capstone.controller;
 
-import capstone.domain.Comment;
 import capstone.dto.*;
 import capstone.services.SessionService;
 import org.springframework.web.bind.annotation.*;
@@ -23,12 +22,12 @@ public class SessionController {
    public void updateQuestion(@PathVariable("session_id") Long session_id,
                               @PathVariable("questionAnswer_id") Long question_id,
                               @RequestBody @Valid QuestionResponseDto dto){
-      sessionService.updateQuestion(session_id, question_id, dto.getResponse());
+      sessionService.updateQuestionResponse(session_id, question_id, dto.getResponse());
    }
 
    @GetMapping("/{session_id}/results")
-   public List<ResultsDTO> results(@PathVariable("session_id") long session_id){
-      List<ResultsDTO> results = sessionService.results(session_id);
+   public List<ResultsDto> results(@PathVariable("session_id") long session_id){
+      List<ResultsDto> results = sessionService.results(session_id);
       return results;
    }
 
@@ -48,6 +47,10 @@ public class SessionController {
       sessionService.addComment(session_id, dto);
    }
 
+   @GetMapping("/{session_id}/learningstyleresults")
+   private List<LearningStyleResultsDto> learningStyleResults(@PathVariable("session_id") long session_id){
+      return sessionService.learningStyleResults(session_id);
+   }
 
 
 }

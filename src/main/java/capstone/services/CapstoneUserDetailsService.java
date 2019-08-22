@@ -1,6 +1,7 @@
 package capstone.services;
 
 import capstone.domain.User;
+import capstone.exceptions.UserDetailServiceException;
 import capstone.jwt.JwtProvider;
 import capstone.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,7 @@ import static org.springframework.security.core.userdetails.User.withUsername;
 public class CapstoneUserDetailsService implements UserDetailsService {
 
    private final UserRepository userRepository;
-
-   final JwtProvider jwtProvider;
+   private final JwtProvider jwtProvider;
 
    public CapstoneUserDetailsService(UserRepository userRepository, JwtProvider jwtProvider) {
       this.userRepository = userRepository;
@@ -28,7 +28,7 @@ public class CapstoneUserDetailsService implements UserDetailsService {
    @Override
    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
       User user = userRepository.findByUsername(s).orElseThrow(() ->
-         new UsernameNotFoundException(String.format("User with name %s does not exist", s)));
+         new UserDetailServiceException(String.format("User with name %s does not exist", s)));
 
       // User details builder
       return withUsername(user.getUsername())

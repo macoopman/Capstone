@@ -18,6 +18,8 @@ public class LearningStyleAnswers {
 
    private long answers;
 
+   private long qId;
+
    public LearningStyleAnswers() {
    }
 
@@ -28,5 +30,10 @@ public class LearningStyleAnswers {
 
    public long getId() {
       return Id;
+   }
+
+   @PostPersist
+   void postPersist(){
+      this.qId = question.getId();
    }
 }

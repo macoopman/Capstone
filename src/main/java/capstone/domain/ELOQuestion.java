@@ -20,16 +20,14 @@ public class ELOQuestion {
    @GeneratedValue(strategy = GenerationType.AUTO)
    private long id;
 
-
-   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-   @JoinColumn(name="question_class")
-   private Klass klass;
-
-
    private int week;
 
    @Size(max=255)
    private String message;
+
+   @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+   @JoinColumn(name="question_class")
+   private Klass klass;
 
 
    public ELOQuestion() {

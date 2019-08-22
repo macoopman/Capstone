@@ -42,42 +42,49 @@ public class EmailService {
 
 
    public void sendRecoveryMessage(User user, String tempPassword){
+      Properties prop = setProperties();
+      Session session = setSession(prop);
+      try {
+         Message message = buildMessage(user, tempPassword, session);
+         Transport.send(message);
+      }
+      catch (MessagingException e) {
+         e.printStackTrace();
+      }
+   }
+
+   private Message buildMessage(User user, String tempPassword, Session session) throws MessagingException {
+      Message message = new MimeMessage(session);
+      message.setFrom(new InternetAddress("passwordReset@whiteboard.com"));
+      message.setRecipients(
+         Message.RecipientType.TO,
+         InternetAddress.parse(user.getUserData().getEmail())
+      );
+      message.setSubject("Password Reset - Whiteboard");
+      message.setText(
+         "Dear " + user.getUserData().getFirstName() + "\n\n" +
+         "Forgot your password. That's ok. \n\n" +
+         "Temp Password: " + tempPassword  + "\n\n" +
+         "Enter temp password when in app \n\n\n " +
+         "WhiteBoard Team ");
+      return message;
+   }
+
+   private Session setSession(Properties prop) {
+      return Session.getInstance(prop,
+            new Authenticator() {
+               protected PasswordAuthentication getPasswordAuthentication() {
+                  return new PasswordAuthentication(username, password);
+               }
+            });
+   }
+
+   private Properties setProperties() {
       Properties prop = new Properties();
       prop.put("mail.smtp.host", host);
       prop.put("mail.smtp.port", port);
       prop.put("mail.smtp.auth", auth);
       prop.put("mail.smtp.starttls.enable", isTLS); //TLS
-
-
-      Session session = Session.getInstance(prop,
-         new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-               return new PasswordAuthentication(username, password);
-            }
-         });
-
-      try {
-
-         Message message = new MimeMessage(session);
-         message.setFrom(new InternetAddress("passwordReset@whiteboard.com"));
-         message.setRecipients(
-            Message.RecipientType.TO,
-            InternetAddress.parse(user.getUserData().getEmail())
-         );
-         message.setSubject("Password Reset - Whiteboard");
-         message.setText(
-            "Dear " + user.getUserData().getFirstName() + "\n\n" +
-            "Forgot your password. That's ok. \n\n" +
-            "Temp Password: " + tempPassword  + "\n\n" +
-            "Enter temp password when in app \n\n\n " +
-            "WhiteBoard Team ");
-
-
-         Transport.send(message);
-
-
-      } catch (MessagingException e) {
-         e.printStackTrace();
-      }
+      return prop;
    }
 }

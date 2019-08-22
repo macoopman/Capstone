@@ -7,5 +7,6 @@ public class AddCommentDto {
 
    private String message;
    private String userId;
+   private String isAnonymous;
 
 }
