@@ -23,6 +23,8 @@ public class Person {
    @Id
    private long id;
 
+   private String username;
+
    private String firstName;
 
    private String lastName;
@@ -60,6 +62,8 @@ public class Person {
    void joinDate(){
       this.dateJoined = new Date();
    }
+
+
 
 
 

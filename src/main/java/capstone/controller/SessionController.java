@@ -25,9 +25,10 @@ public class SessionController {
       sessionService.updateQuestionResponse(session_id, question_id, dto.getResponse());
    }
 
-   @GetMapping("/{session_id}/results")
-   public List<ResultsDto> results(@PathVariable("session_id") long session_id){
-      List<ResultsDto> results = sessionService.results(session_id);
+
+   @GetMapping("/{session_id}/results/{week_number}")
+   public List<ResultsDto> results(@PathVariable("session_id") long session_id, @PathVariable("week_number") long week_number){
+      List<ResultsDto> results = sessionService.results(session_id, week_number);
       return results;
    }
 

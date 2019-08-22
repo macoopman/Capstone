@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class SessionService {
@@ -38,13 +37,7 @@ public class SessionService {
       this.learningStyleQuestionRepository = learningStyleQuestionRepository;
    }
 
-   /**
-    * Perform update to a specific class/session ELO question
-    *
-    * @param session_id Session user_Id
-    * @param question_id Id of question
-    * @param response   Students response
-    */
+
    public void updateQuestionResponse(Long session_id, Long question_id, String response){
       Session session = sessionRepository.findById(session_id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
       ELOAnswer answerItem = eloAnswerRepository.findById(question_id).orElseThrow( () -> new SessionServiceException("Question Id Not Found") );
@@ -60,44 +53,31 @@ public class SessionService {
    }
 
 
-   /**
-    * Return JSON data showing the current class responses and averages for the ELO questions
-    *
-    * @param session_id
-    * @return JSON list of results
-    */
-   public List<ResultsDto> results(long session_id){
+   public List<ResultsDto> results(long session_id, long week_number){
       Session session = sessionRepository.findById(session_id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
-      return getResultsDTOS(session);
-   }
-
-   private List<ResultsDto> getResultsDTOS(Session question) {
       List<ResultsDto> results = new LinkedList<>();
 
-      for( ELOAnswer answer : question.getQuestionAndAnswers()){
+      for( ELOAnswer answer : session.getQuestionAndAnswers()){
          ResultsDto result = new ResultsDto();
-         result.setId(String.valueOf(answer.getId()));
-         result.setQuestion(answer.getQuestion().getMessage());
-         if(!(0 == answer.getNumOfResponses())){
-            result.setAverage(String.valueOf( answer.getAnswers() / answer.getNumOfResponses() ));
-         }
-         else {
-            result.setAverage(ZERO);
-         }
 
-         result.setTotalResponses(String.valueOf(answer.getNumOfResponses()));
-         results.add(result);
+         if (answer.getQuestion().getWeek() == week_number){
+            result.setId(String.valueOf(answer.getId()));
+            result.setQuestion(answer.getQuestion().getMessage());
+            if(!(0 == answer.getNumOfResponses())){
+               result.setAverage(String.valueOf( answer.getAnswers() / answer.getNumOfResponses() ));
+            }
+            else {
+               result.setAverage(ZERO);
+            }
+
+            result.setTotalResponses(String.valueOf(answer.getNumOfResponses()));
+            results.add(result);
+         }
       }
       return results;
    }
 
 
-   /**
-    * Add a new student to a session
-    *
-    * @param id Session Id
-    * @param dto Student Add Data Transfer Object
-    */
    public void addStudent(long id, AddStudentProfessorDto dto) {
       Session session = sessionRepository.findById(id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
       Student student = studentRepository.findById(Long.parseLong(dto.getUser_Id())).orElseThrow( () -> new SessionServiceException("Student Id Not Found") );

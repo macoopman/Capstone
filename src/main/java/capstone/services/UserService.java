@@ -94,7 +94,6 @@ public class UserService {
       validateEmail(email);
 
       Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
-
       List<LearningStyleAnswers> learningStyleAnswers = new LinkedList<>();
 
       User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
@@ -111,8 +110,10 @@ public class UserService {
 
       Student student = new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major, learningStyleAnswers);
 
+
       user.setUserData(student);
       user.setUsername(buildUniqueUserName(user));
+      student.setUsername(user.getUsername());
 
       cleanUpStudentRepo();
 
@@ -130,9 +131,10 @@ public class UserService {
       Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
 
       User user = userRepository.save( new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Professor(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE)));
-
-      user.setUserData( new Professor(user.getId(),firstName, lastName, email, Double.parseDouble(rating)));
+      Professor professor = new Professor(user.getId(),firstName, lastName, email, Double.parseDouble(rating));
+      user.setUserData(professor);
       user.setUsername(buildUniqueUserName(user));
+      professor.setUsername(user.getUsername());
 
       cleanUpProfessorRepo();
 
