@@ -70,106 +70,124 @@ public class UserService {
    }
 
    public UserDto signin(String username, String password){
-      Optional<User> user = userRepository.findByUsername(username);
-
-      if(null == username || null == password) throw new UserServiceException("Missing Field");
-
-      if(!user.isPresent()) throw new UserServiceException("Invalid Username");
-
-      try{
-         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password ));
-      }
-      catch (Exception e){
-         throw new UserServiceException("Invalid Password");
-      }
-
-      Optional<String> token = Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
-
+      Optional<User> user = findUser(username);
+      validateUser(username, password, user);
+      authenticateUser(username, password);
+      Optional<String> token = addTokenToUser(username, user);
       return buildUserDto(user, token);
    }
 
 
+         private Optional<User> findUser(String username) {
+            return userRepository.findByUsername(username);
+         }
+
+         private void validateUser(String username, String password, Optional<User> user) {
+            if(null == username || null == password) throw new UserServiceException("Missing Field");
+            if(!user.isPresent()) throw new UserServiceException("Invalid Username");
+         }
+
+
+         private void authenticateUser(String username, String password) {
+            try{
+               authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password ));
+            } catch (Exception e){
+               throw new UserServiceException("Invalid Password"); }
+         }
+
+         private Optional<String> addTokenToUser(String username, Optional<User> user) {
+            return Optional.of(jwtProvider.createToken(username, user.get().getRoles()));
+         }
+
+
+
+
+
+
+
    public Optional<User> addStudent(String firstName, String lastName, String password, String email, String gpa, String major) {
-
       validateEmail(email);
-
-      Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
+      Optional<Role> role = findRole(ROLE_USER);
       List<LearningStyleAnswers> learningStyleAnswers = new LinkedList<>();
-
-      User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
-         new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING, learningStyleAnswers
-         )));
-
-      Iterable<LearningStyleQuestion> learningStyleQuestions = learningStyleQuestionRepository.findAll();
-
-      for (LearningStyleQuestion question : learningStyleQuestions ){
-         LearningStyleAnswers answer = new LearningStyleAnswers(question,0);
-         learningStyleAnswers.add(answer);
-         learningStyleAnswerRepository.save(answer);
-      }
-
-      Student student = new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major, learningStyleAnswers);
-
-
-      user.setUserData(student);
-      user.setUsername(buildUniqueUserName(user));
-      student.setUsername(user.getUsername());
-
-      cleanUpStudentRepo();
-
-      return userRepository.findByUsername(user.getUsername());
+      return Optional.of(createNewStudent(firstName, lastName, password, email, gpa, major, role, learningStyleAnswers));
    }
 
-   private void cleanUpStudentRepo() {
-      Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
-      studentRepository.delete(deleteMe.get());
-   }
+         private User createNewStudent(String firstName, String lastName, String password, String email, String gpa, String major, Optional<Role> role, List<LearningStyleAnswers> learningStyleAnswers) {
+            User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
+               new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING, learningStyleAnswers
+               )));
+
+            appendLearningStyleQuestions(learningStyleAnswers);
+            Student student = new Student(user.getId(), firstName, lastName, email, Double.parseDouble(gpa), major, learningStyleAnswers);
+            user.setUserData(student);
+            user.setUsername(buildUniqueUserName(user));
+            student.setUsername(user.getUsername());
+
+            cleanUpStudentRepo();
+            return user;
+         }
+
+         private void appendLearningStyleQuestions(List<LearningStyleAnswers> learningStyleAnswers) {
+            Iterable<LearningStyleQuestion> learningStyleQuestions = learningStyleQuestionRepository.findAll();
+
+            for (LearningStyleQuestion question : learningStyleQuestions ){
+               LearningStyleAnswers answer = new LearningStyleAnswers(question,0);
+               learningStyleAnswers.add(answer);
+               learningStyleAnswerRepository.save(answer);
+            }
+         }
+
+         private Optional<Role> findRole(String roleUser) {
+            return roleRepository.findByRoleName(roleUser);
+         }
+
+         private void cleanUpStudentRepo() {
+            Optional<Student> deleteMe = studentRepository.findById(TEMP_ID);
+            studentRepository.delete(deleteMe.get());
+         }
 
 
    public Optional<User> addProfessor(String firstName, String lastName, String password, String email, String rating) {
       validateEmail(email);
-      Optional<Role> role = roleRepository.findByRoleName(ROLE_USER);
+      Optional<Role> role = findRole(ROLE_USER);
 
       User user = userRepository.save( new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Professor(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE)));
       Professor professor = new Professor(user.getId(),firstName, lastName, email, Double.parseDouble(rating));
       user.setUserData(professor);
       user.setUsername(buildUniqueUserName(user));
       professor.setUsername(user.getUsername());
-
       cleanUpProfessorRepo();
-
-      return userRepository.findByUsername(user.getUsername());
+      return Optional.of(user);
    }
 
-   private void cleanUpProfessorRepo() {
-      Optional<Professor> deleteMe = professorRepository.findById(TEMP_ID);
-      professorRepository.delete(deleteMe.get());
-   }
+         private void cleanUpProfessorRepo() {
+            Optional<Professor> deleteMe = professorRepository.findById(TEMP_ID);
+            professorRepository.delete(deleteMe.get());
+         }
 
 
    public Optional<User> addAdmin(String firstName, String lastName, String password, String email) {
-      Optional<Role> role = roleRepository.findByRoleName(ROLE_ADMIN);
+      Optional<Role> role = findRole(ROLE_ADMIN);
       User user = userRepository.save(new User(DUMMY_STRING,passwordEncoder.encode(password), role.get(), new Admin(TEMP_ID,DUMMY_STRING, DUMMY_STRING,DUMMY_EMAIL)));
       user.setUserData(new Admin(user.getId(),firstName, lastName, email));
       user.setUsername(buildUniqueUserName(user));
       cleanUpAdminRepo();
-
-      return userRepository.findByUsername(user.getUsername());
+      return Optional.of(user);
    }
 
-   private void cleanUpAdminRepo() {
-      Optional<Admin> deleteMe = adminRepository.findById(TEMP_ID);
-      adminRepository.delete(deleteMe.get());
-   }
+         private void cleanUpAdminRepo() {
+            Optional<Admin> deleteMe = adminRepository.findById(TEMP_ID);
+            adminRepository.delete(deleteMe.get());
+         }
 
 
-   private String buildUniqueUserName(User user) {
-      StringBuilder username = new StringBuilder();
-      username.append(user.getUserData().getFirstName().substring(0,1));
-      username.append(user.getUserData().getLastName());
-      username.append(user.getId());
-      return username.toString();
-   }
+         private String buildUniqueUserName(User user) {
+            StringBuilder username = new StringBuilder();
+            username.append(user.getUserData().getFirstName().substring(0,1));
+            username.append(user.getUserData().getLastName());
+            username.append(user.getId());
+            return username.toString();
+         }
 
 
    public RecoverReturnDto recoverPassword(String username, String email) {
@@ -180,12 +198,11 @@ public class UserService {
       recoverUser.setPassword(hashedPassword);
       userRepository.save(recoverUser);
       emailService.sendRecoveryMessage(recoverUser, tempPassword);
-
       return new RecoverReturnDto(recoverUser.getId());
    }
 
    private User getUserForRecovery(String username, String email) {
-      Optional<User> user = userRepository.findByUsername(username);
+      Optional<User> user = findUser(username);
       Optional<Student> student = studentRepository.findStudentByEmail(email);
       Optional<Professor> professor = professorRepository.findProfessorByEmail(email);
       User recoverUser = null;
