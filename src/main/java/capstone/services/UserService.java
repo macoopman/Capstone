@@ -31,19 +31,19 @@ public class UserService {
    private static final Long TEMP_ID = 999999L;
    private static final String ROLE_USER = "ROLE_USER";
    private static final String ROLE_ADMIN = "ROLE_ADMIN";
-   public static final int RECOVERY_PASSWORD_LENGTH = 10;
+   private static final int RECOVERY_PASSWORD_LENGTH = 10;
 
-   private UserRepository userRepository;
-   private ProfessorRepository professorRepository;
-   private StudentRepository studentRepository;
-   private AuthenticationManager authenticationManager;
-   private RoleRepository roleRepository;
-   private PasswordEncoder passwordEncoder;
-   private JwtProvider jwtProvider;
-   private EmailService emailService;
-   private AdminRepository adminRepository;
-   private LearningStyleQuestionRepository learningStyleQuestionRepository;
-   private LearningStyleAnswerRepository learningStyleAnswerRepository;
+   private final UserRepository userRepository;
+   private final ProfessorRepository professorRepository;
+   private final StudentRepository studentRepository;
+   private final AuthenticationManager authenticationManager;
+   private final RoleRepository roleRepository;
+   private final PasswordEncoder passwordEncoder;
+   private final JwtProvider jwtProvider;
+   private final EmailService emailService;
+   private final AdminRepository adminRepository;
+   private final LearningStyleQuestionRepository learningStyleQuestionRepository;
+   private final LearningStyleAnswerRepository learningStyleAnswerRepository;
 
 
 
@@ -172,7 +172,7 @@ public class UserService {
    }
 
 
-   public RecoverReturnDto recoverPassword(String username, String email) throws Exception{
+   public RecoverReturnDto recoverPassword(String username, String email) {
 
       User recoverUser = getUserForRecovery(username, email);
       String tempPassword = RandomStringUtils.random(RECOVERY_PASSWORD_LENGTH, true, true);
@@ -245,7 +245,7 @@ public class UserService {
 
    // helper methods
 
-   private UserDto buildUserDto(Optional<User> user, Optional<String> token) {
+   private UserDto buildUserDto(Optional<User> user, @SuppressWarnings("OptionalUsedAsFieldOrParameterType") Optional<String> token) {
       UserDto userDto = new UserDto();
       userDto.setUsername(user.get().getUsername());
       userDto.setUserId(user.get().getId());

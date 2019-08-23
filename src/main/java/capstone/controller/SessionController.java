@@ -12,7 +12,7 @@ import java.util.List;
 public class SessionController {
 
 
-   private SessionService sessionService;
+   private final SessionService sessionService;
 
    public SessionController(SessionService sessionService) {
       this.sessionService = sessionService;
@@ -28,8 +28,7 @@ public class SessionController {
 
    @GetMapping("/{session_id}/results/{week_number}")
    public List<ResultsDto> results(@PathVariable("session_id") long session_id, @PathVariable("week_number") long week_number){
-      List<ResultsDto> results = sessionService.results(session_id, week_number);
-      return results;
+      return sessionService.results(session_id, week_number);
    }
 
    @PostMapping("/{session_id}/addStudent")

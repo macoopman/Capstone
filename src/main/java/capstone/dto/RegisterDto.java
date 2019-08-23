@@ -3,7 +3,7 @@ package capstone.dto;
 import lombok.Data;
 
 @Data
-public class RegisterDto {
+class RegisterDto {
 
    private String username;
    private String password;

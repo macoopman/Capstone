@@ -14,15 +14,15 @@ import java.util.List;
 @Service
 public class SessionService {
 
-   public static final String ZERO = "0";
+   private static final String ZERO = "0";
 
-   private SessionRepository sessionRepository;
-   private StudentRepository studentRepository;
-   private ProfessorRepository professorRepository;
-   private ELOAnswerRepository eloAnswerRepository;
-   private UserRepository userRepository;
-   private CommentRepository commentRepository;
-   private LearningStyleQuestionRepository learningStyleQuestionRepository;
+   private final SessionRepository sessionRepository;
+   private final StudentRepository studentRepository;
+   private final ProfessorRepository professorRepository;
+   private final ELOAnswerRepository eloAnswerRepository;
+   private final UserRepository userRepository;
+   private final CommentRepository commentRepository;
+   private final LearningStyleQuestionRepository learningStyleQuestionRepository;
 
    public SessionService(SessionRepository sessionRepository, StudentRepository studentRepository,
                          ProfessorRepository professorRepository, ELOAnswerRepository eloAnswerRepository,
@@ -111,6 +111,7 @@ public class SessionService {
       comment.setUserName(currentUser.getUsername());
       commentRepository.save(comment);
       comment.setParentId((int) comment.getId());
+      comment.setSessionName(session.getSessionName());
       commentRepository.save(comment);
    }
 

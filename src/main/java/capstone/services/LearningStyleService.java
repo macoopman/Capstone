@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 public class LearningStyleService {
 
 
-   private LearningStyleQuestionRepository learningStyleQuestionRepository;
+   private final LearningStyleQuestionRepository learningStyleQuestionRepository;
 
    public LearningStyleService(LearningStyleQuestionRepository learningStyleQuestionRepository) {
       this.learningStyleQuestionRepository = learningStyleQuestionRepository;

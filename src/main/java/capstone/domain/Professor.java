@@ -3,6 +3,7 @@ package capstone.domain;
 
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
@@ -10,6 +11,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
 @NoArgsConstructor(access = AccessLevel.PROTECTED, force = true)

@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class DepartmentService {
 
-   private KlassRepository klassRepository;
-   private DepartmentRepository departmentRepository;
+   private final KlassRepository klassRepository;
+   private final DepartmentRepository departmentRepository;
 
    public DepartmentService(KlassRepository klassRepository, DepartmentRepository departmentRepository) {
       this.klassRepository = klassRepository;

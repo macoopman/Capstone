@@ -18,6 +18,7 @@ public class Comment {
    private Integer parentId;
    private Integer numOfRelies;
    private String isAnonymous;
+   private String sessionName;
 
    @OneToOne
    private User user;
@@ -35,7 +36,7 @@ public class Comment {
       this("", null, null, null);
    }
 
-   public Comment(String message, User user, Session session, Comment parentComment) {
+   private Comment(String message, User user, Session session, Comment parentComment) {
       this.message = message;
       this.user = user;
       this.session = session;

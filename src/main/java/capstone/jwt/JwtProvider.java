@@ -20,8 +20,8 @@ public class JwtProvider {
 
    private JwtParser parser;
 
-   private String secretKey;
-   private long validityInMilliseconds;
+   private final String secretKey;
+   private final long validityInMilliseconds;
 
    @Autowired
    public JwtProvider(@Value("${security.jwt.token.secret-key}") String secretKey,

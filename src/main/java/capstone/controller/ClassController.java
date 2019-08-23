@@ -18,7 +18,7 @@ public class ClassController {
    private ClassService classService;
 
    @PostMapping("/{id}/addQuestion")
-   public void add(@PathVariable("id") Long id, @RequestBody @Valid NewQuestionDto dto) throws Exception{
+   public void add(@PathVariable("id") Long id, @RequestBody @Valid NewQuestionDto dto) {
       classService.addQuestion(id, dto.getWeekNumber(), dto.getQuestion());
    }
 

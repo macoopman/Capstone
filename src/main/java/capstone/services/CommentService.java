@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class CommentService {
 
-   private CommentRepository commentRepository;
-   private UserRepository userRepository;
+   private final CommentRepository commentRepository;
+   private final UserRepository userRepository;
 
 
    public CommentService(CommentRepository commentRepository, UserRepository userRepository) {

@@ -33,7 +33,7 @@ public class ELOQuestion {
    public ELOQuestion() {
    }
 
-   public ELOQuestion(Klass klass, @Size(min = 0, max = 8) int week, @Size(max = 255) String message) {
+   public ELOQuestion(Klass klass, @Size(max = 8) int week, @Size(max = 255) String message) {
       this.klass = klass;
       this.week = week;
       this.message = message;

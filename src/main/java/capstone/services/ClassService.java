@@ -18,10 +18,10 @@ import java.util.*;
 @Service
 public class ClassService {
 
-   private ELOQuestionRepository eloQuestionRepository;
-   private KlassRepository klassRepository;
-   private SessionRepository sessionRepository;
-   private ELOAnswerRepository eloAnswerRepository;
+   private final ELOQuestionRepository eloQuestionRepository;
+   private final KlassRepository klassRepository;
+   private final SessionRepository sessionRepository;
+   private final ELOAnswerRepository eloAnswerRepository;
 
    public ClassService(ELOQuestionRepository eloQuestionRepository, KlassRepository klassRepository,
                        SessionRepository sessionRepository, ELOAnswerRepository eloAnswerRepository ) {
@@ -41,6 +41,10 @@ public class ClassService {
       Session session = createSession(startDate, endDate, klass);
       klass.appendSession(session);
       klassRepository.save(klass);
+      session.setClassSubject(klass.getSubject());
+      session.setClassNumber(klass.getClassNumber());
+
+     session.setClassDescription(klass.getDescription());
       sessionRepository.save(session);
 
    }

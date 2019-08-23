@@ -32,7 +32,7 @@ INSERT INTO security_user_roles(user_id, roles_id) Values (1,1);
 #
 #
 # -- create classes
-# INSERT INTO klass(user_Id, subject, class_number) VALUES (1, 'Databases', 422);
+# INSERT INTO klass(user_Id, classSubject, class_number) VALUES (1, 'Databases', 422);
 #
 # -- Assign classes to departments
 # INSERT INTO department_department_classes(department_id, department_classes_id) VALUES (1,1);

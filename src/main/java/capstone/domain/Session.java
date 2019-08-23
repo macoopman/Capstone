@@ -20,6 +20,11 @@ public class Session {
    private String sessionName;
    private LocalDate startDate;
    private LocalDate endDate;
+   private String classSubject;
+   private String classNumber;
+   @Lob
+   private String classDescription;
+
 
    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
    @JoinColumn(name="class_id")

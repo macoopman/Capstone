@@ -16,12 +16,12 @@ import java.util.Properties;
 @Component
 public class EmailService {
 
-   private String username;
-   private String password;
-   private String host;
-   private String port;
-   private String auth;
-   private String isTLS;
+   private final String username;
+   private final String password;
+   private final String host;
+   private final String port;
+   private final String auth;
+   private final String isTLS;
 
    @Autowired
    public EmailService(
