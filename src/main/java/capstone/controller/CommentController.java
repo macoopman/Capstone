@@ -1,6 +1,7 @@
 package capstone.controller;
 
 import capstone.dto.AddCommentDto;
+import capstone.dto.CommentReturnDto;
 import capstone.services.CommentService;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,7 +18,7 @@ public class CommentController {
    }
 
    @PostMapping("/{comment_id}/addReply")
-   public void addReply(@PathVariable("comment_id") long comment_id, @RequestBody @Valid AddCommentDto dto){
-      commentService.addReply(comment_id, dto);
+   public CommentReturnDto addReply(@PathVariable("comment_id") long comment_id, @RequestBody @Valid AddCommentDto dto){
+      return commentService.addReply(comment_id, dto);
    }
 }

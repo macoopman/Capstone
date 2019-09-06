@@ -11,8 +11,11 @@ import javax.validation.Valid;
 @RequestMapping("/learningstyle")
 public class LearningStyleController {
 
-   @Autowired
-   LearningStyleService learningStyleService;
+   final LearningStyleService learningStyleService;
+
+   public LearningStyleController(LearningStyleService learningStyleService) {
+      this.learningStyleService = learningStyleService;
+   }
 
 
    @PostMapping("/add")

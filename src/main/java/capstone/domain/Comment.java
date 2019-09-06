@@ -19,6 +19,7 @@ public class Comment {
    private Integer numOfRelies;
    private String isAnonymous;
    private String sessionName;
+   private String parentSessionId;
 
    @OneToOne
    private User user;

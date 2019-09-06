@@ -36,19 +36,16 @@ public class UserService {
    private final UserRepository userRepository;
    private final ProfessorRepository professorRepository;
    private final StudentRepository studentRepository;
-   private final AuthenticationManager authenticationManager;
+   private final AdminRepository adminRepository;
    private final RoleRepository roleRepository;
+   private final AuthenticationManager authenticationManager;
    private final PasswordEncoder passwordEncoder;
    private final JwtProvider jwtProvider;
    private final EmailService emailService;
-   private final AdminRepository adminRepository;
    private final LearningStyleQuestionRepository learningStyleQuestionRepository;
    private final LearningStyleAnswerRepository learningStyleAnswerRepository;
 
 
-
-
-   @Autowired
    public UserService(UserRepository userRepository, AuthenticationManager authenticationManager,
                       RoleRepository roleRepository, PasswordEncoder passwordEncoder, JwtProvider jwtProvider,
                       ProfessorRepository professorRepository,StudentRepository studentRepository,

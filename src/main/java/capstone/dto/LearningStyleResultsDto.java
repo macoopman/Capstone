@@ -12,5 +12,5 @@ public class LearningStyleResultsDto {
    @JsonIgnore
    private int total;
    @JsonIgnore
-   private int responces;
+   private int responses;
 }

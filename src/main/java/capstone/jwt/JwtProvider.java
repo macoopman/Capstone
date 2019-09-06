@@ -1,29 +1,20 @@
 package capstone.jwt;
 
 import capstone.domain.Role;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.*;
 
-import java.time.Clock;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
    private final String ROLES_KEY = "roles";
-
-   private JwtParser parser;
-
    private final String secretKey;
    private final long validityInMilliseconds;
 
-   @Autowired
    public JwtProvider(@Value("${security.jwt.token.secret-key}") String secretKey,
                       @Value("${security.jwt.token.expiration}")long validityInMilliseconds) {
 
@@ -31,13 +22,6 @@ public class JwtProvider {
       this.validityInMilliseconds = validityInMilliseconds;
    }
 
-   /**
-    * Create JWT string given username and roles
-    *
-    * @param username
-    * @param roles
-    * @return jwt string
-    */
    public String createToken(String username, List<Role> roles){
       // Add username
       Claims claims = Jwts.claims().setSubject(username);
@@ -56,8 +40,6 @@ public class JwtProvider {
 
    }
 
-
-   // Validate Token
    public boolean isValidToken(String token){
       try{
          Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token);
@@ -67,17 +49,20 @@ public class JwtProvider {
       }
    }
 
-   // get username
-   public String getUsername(String token){
-      return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+   public String getUserDetailsByToken(String token){
+      return Jwts.parser()
+               .setSigningKey(secretKey)
+               .parseClaimsJws(token)
+               .getBody()
+               .getSubject();
    }
 
-   // Get Roles
-   public List<GrantedAuthority> getRoles(String token){
-      List<Map<String, String>> roleClaims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(ROLES_KEY, List.class);
-      return roleClaims.stream().map(roleClaim ->
-               new SimpleGrantedAuthority(roleClaim.get("authority"))).collect(Collectors.toList());
-   }
+//   // Get Roles
+//   public List<GrantedAuthority> getRoles(String token){
+//      List<Map<String, String>> roleClaims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().get(ROLES_KEY, List.class);
+//      return roleClaims.stream().map(roleClaim ->
+//               new SimpleGrantedAuthority(roleClaim.get("authority"))).collect(Collectors.toList());
+//   }
 
 
 

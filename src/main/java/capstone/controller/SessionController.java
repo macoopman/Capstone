@@ -1,5 +1,6 @@
 package capstone.controller;
 
+import capstone.domain.Comment;
 import capstone.dto.*;
 import capstone.services.SessionService;
 import org.springframework.web.bind.annotation.*;
@@ -43,8 +44,8 @@ public class SessionController {
 
 
    @PostMapping("/{session_id}/addComment")
-   private void addComment(@PathVariable("session_id") long session_id, @RequestBody @Valid AddCommentDto dto){
-      sessionService.addComment(session_id, dto);
+   private CommentReturnDto addComment(@PathVariable("session_id") long session_id, @RequestBody @Valid AddCommentDto dto){
+      return sessionService.addComment(session_id, dto);
    }
 
    @GetMapping("/{session_id}/learningstyleresults")

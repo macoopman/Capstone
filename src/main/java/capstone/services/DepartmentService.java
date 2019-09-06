@@ -19,9 +19,9 @@ public class DepartmentService {
       this.departmentRepository = departmentRepository;
    }
 
-   public void addClass(long id, NewClassDto dto) {
+   public void addClass(long departmentId, NewClassDto dto) {
 
-      Department department = departmentRepository.findById(id).orElseThrow( () -> new DepartmentServiceException("Department Not Found"));
+      Department department = departmentRepository.findById(departmentId).orElseThrow( () -> new DepartmentServiceException("Department Not Found"));
 
       Klass klass = new Klass();
       klass.setSubject(dto.getSubject());

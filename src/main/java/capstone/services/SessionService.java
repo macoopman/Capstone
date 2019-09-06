@@ -4,9 +4,7 @@ import capstone.domain.*;
 import capstone.dto.*;
 import capstone.exceptions.SessionServiceException;
 import capstone.repositories.*;
-
 import org.springframework.stereotype.Service;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -94,14 +92,24 @@ public class SessionService {
    }
 
 
-   public void addComment(long session_id, AddCommentDto dto) {
+   public CommentReturnDto addComment(long session_id, AddCommentDto dto) {
       User user = userRepository.findById(Long.parseLong(dto.getUserId())).orElseThrow( () -> new SessionServiceException("User Id Not Found") );
       Session session = sessionRepository.findById(session_id).orElseThrow( () -> new SessionServiceException("Session Id Not Found") );
-      buildAndSaveComment(dto, user, session);
+      User currentUser = userRepository.findById(Long.parseLong(dto.getUserId())).orElseThrow(() -> new SessionServiceException("User id not found"));
+      Comment comment = createComment(dto, user, session, currentUser);
+      commentRepository.save(comment);
+      updateComment(session, comment);
+      comment = commentRepository.save(comment);
+      return new CommentReturnDto(String.valueOf(comment.getId()));
    }
 
-   private void buildAndSaveComment(AddCommentDto dto, User user, Session session) {
-      User currentUser = userRepository.findById(Long.parseLong(dto.getUserId())).orElseThrow(() -> new SessionServiceException("User id not found"));
+   private void updateComment(Session session, Comment comment) {
+      comment.setParentId((int) comment.getId());
+      comment.setSessionName(session.getSessionName());
+      comment.setParentSessionId("" + session.getId());
+   }
+
+   private Comment createComment(AddCommentDto dto, User user, Session session, User currentUser) {
       Comment comment = new Comment();
       comment.setMessage(dto.getMessage());
       comment.setUser(user);
@@ -109,10 +117,7 @@ public class SessionService {
       comment.setParentComment(null);
       comment.setIsAnonymous(dto.getIsAnonymous());
       comment.setUserName(currentUser.getUsername());
-      commentRepository.save(comment);
-      comment.setParentId((int) comment.getId());
-      comment.setSessionName(session.getSessionName());
-      commentRepository.save(comment);
+      return comment;
    }
 
 
@@ -139,11 +144,11 @@ public class SessionService {
             for (LearningStyleResultsDto result : results){
                if (result.getQuestionId() == answer.getQuestion().getId()){
                   int total = result.getTotal() + (int)answer.getAnswers();
-                  int responses = result.getResponces() + 1;
+                  int responses = result.getResponses() + 1;
                   double average = total /responses;
 
                   result.setTotal(total);
-                  result.setResponces(responses);
+                  result.setResponses(responses);
                   result.setAverage(average);
                }
             }

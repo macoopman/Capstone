@@ -11,8 +11,11 @@ import javax.validation.Valid;
 @RequestMapping("/departments")
 public class DepartmentController {
 
-   @Autowired
-   private DepartmentService departmentService;
+   private final DepartmentService departmentService;
+
+   public DepartmentController(DepartmentService departmentService) {
+      this.departmentService = departmentService;
+   }
 
    @PostMapping("/{department_id}/addClass")
    public void addClass(@PathVariable("department_id") long id, @RequestBody @Valid NewClassDto dto){
