@@ -109,7 +109,9 @@ public class UserService {
       return Optional.of(createNewStudent(firstName, lastName, password, email, gpa, major, role, learningStyleAnswers));
    }
 
-         private User createNewStudent(String firstName, String lastName, String password, String email, String gpa, String major, Optional<Role> role, List<LearningStyleAnswers> learningStyleAnswers) {
+         private User createNewStudent(String firstName, String lastName, String password, String email,
+                                       String gpa, String major, Optional<Role> role, List<LearningStyleAnswers> learningStyleAnswers) {
+
             User user = userRepository.save(new User(DUMMY_STRING, passwordEncoder.encode(password), role.get(),
                new Student(TEMP_ID, DUMMY_STRING, DUMMY_STRING, DUMMY_EMAIL, DUMMY_DOUBLE, DUMMY_STRING, learningStyleAnswers
                )));
@@ -119,7 +121,6 @@ public class UserService {
             user.setUserData(student);
             user.setUsername(buildUniqueUserName(user));
             student.setUsername(user.getUsername());
-
             cleanUpStudentRepo();
             return user;
          }
@@ -204,12 +205,12 @@ public class UserService {
       Optional<Professor> professor = professorRepository.findProfessorByEmail(email);
       User recoverUser = null;
 
-      if(null != username){
+      if(null != username && !username.equals("")){
          if(!user.isPresent()) throw new UserServiceException("Invalid Username");
          recoverUser = user.get();
       }
 
-      if(null != email){
+      if(null != email && !email.equals("")){
          if (!student.isPresent() && !professor.isPresent()) throw new UserServiceException("Invalid Email Address");
 
          if(student.isPresent()){
@@ -273,6 +274,12 @@ public class UserService {
          userDto.setCurrentDepartmentId(null);
          userDto.setCurrentSessionNumberId(null);
          userDto.setCurrentClassNumberId(null);
+      }
+      else{
+         userDto.setCurrentDepartmentId(user.get().getUserData().getCurrentSession().getKlass().getDepartment().getId());
+         userDto.setCurrentSessionNumberId(user.get().getUserData().getCurrentSession().getId());
+         userDto.setCurrentClassNumberId(user.get().getUserData().getCurrentSession().getKlass().getId());
+
       }
       return userDto;
    }

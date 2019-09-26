@@ -44,9 +44,10 @@ public class ClassService {
       session.setClassSubject(klass.getSubject());
       session.setClassNumber(klass.getClassNumber());
 
-     session.setClassDescription(klass.getDescription());
-      sessionRepository.save(session);
-
+      session.setClassDescription(klass.getDescription());
+      Session s = sessionRepository.save(session);
+      s.setSessionName(s.getClassNumber() + "_" + s.getSessionName());
+      sessionRepository.save(s);
    }
 
 

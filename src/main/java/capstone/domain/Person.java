@@ -27,8 +27,8 @@ public class Person {
    @JoinColumn(name = "user_Id")
    private Session currentSession;
 
-   @OneToMany(mappedBy = "klass")
-   List<ELOQuestion> questions;
+//   @OneToMany(mappedBy = "klass")
+//   List<ELOQuestion> questions;
 
    Person(Long id, String firstName, String lastName, String email) {
       this.id = id;

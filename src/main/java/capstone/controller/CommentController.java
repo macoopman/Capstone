@@ -27,7 +27,7 @@ public class CommentController {
       return commentService.addReply(comment_id, dto);
    }
 
-   @GetMapping("/{comment_id}/delete/")
+   @DeleteMapping("/{comment_id}/delete")
    public void deleteReply(@PathVariable("comment_id") long comment_id){
       Comment comment = commentRepository.findById(comment_id).orElseThrow(() -> new CommentServiceException("Comment Id Not Found"));
       commentService.deleteComment(comment);
